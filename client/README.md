@@ -1,0 +1,1 @@
+Not yet sure how to reliably share the DTOs between server and client. For now keep the `dto` folder in sync with the server's `dto`s manually
