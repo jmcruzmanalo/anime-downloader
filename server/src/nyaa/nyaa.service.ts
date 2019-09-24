@@ -44,7 +44,7 @@ export class NyaaService {
       ${sub} ${query} ${resolution}p`);
       return searchResult;
     } catch (err) {
-      this.logger.error(err);
+      // this.logger.error(err);
       throw new InternalServerErrorException(
         'Something went wrong in NyaaService.search. See logs',
       );
@@ -63,13 +63,14 @@ export class NyaaService {
 
     try {
       await subscription.save();
-      const subscriptions = await this.searchSubscribed();
-      this.pubSub.publish('subscriptionAdded', subscriptions);
     } catch (err) {
-      this.logger.error(err);
       if (err.errno === 19) {
+        this.logger.error('Anime subscription already exists.')
         throw new ConflictException('Anime subscription already exists.');
       }
+    } finally {
+      const subscriptions = await this.searchSubscribed();
+      this.pubSub.publish('subscriptionAdded', subscriptions);
     }
   }
 

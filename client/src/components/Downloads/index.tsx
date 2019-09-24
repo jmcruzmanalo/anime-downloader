@@ -2,7 +2,7 @@ import React, { useContext, useState, useCallback, useEffect } from 'react';
 import SocketContext from '../../helpers/SocketProvider';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import { List, Tabs, Badge } from 'antd';
+import { Tabs, Badge } from 'antd';
 import {
   GetDownloadProgress_downloadProgress,
   GetDownloadProgress
@@ -32,29 +32,20 @@ const Downloads = () => {
   const [downloads, setDownloads] = useState<
     GetDownloadProgress_downloadProgress[]
   >([]);
-  const { socket } = useContext(SocketContext);
-  /**
-   * TODO: Just testing refiring the gql query if a websocket updates. At the same
-   * time the websocket emits the downloadProgress anyway so you don't actually need
-   * to call the gql query. Again it's all just for testing.
-   */
-  const { data, refetch } = useQuery<GetDownloadProgress>(query);
 
-  const downloadUpdate = useCallback(() => {
-    refetch();
-  }, [refetch]);
+  // const { data, refetch } = useQuery<GetDownloadProgress>(query);
 
-  useEffect(() => {
-    if (data) {
-      setDownloads(data.downloadProgress);
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (data) {
+  //     setDownloads(data.downloadProgress);
+  //   }
+  // }, [data]);
 
-  useEffect(() => {
-    if (socket) {
-      socket.on('downloadUpdate', downloadUpdate);
-    }
-  }, [socket, downloadUpdate]);
+  // useEffect(() => {
+  //   if (socket) {
+  //     socket.on('downloadUpdate', downloadUpdate);
+  //   }
+  // }, [socket, downloadUpdate]);
 
   return (
     <Tabs

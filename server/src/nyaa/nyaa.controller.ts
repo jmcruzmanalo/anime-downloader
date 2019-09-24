@@ -6,17 +6,21 @@ import {
   UsePipes,
   ValidationPipe,
   ConflictException,
+  Inject,
 } from '@nestjs/common';
 import { NyaaService } from './nyaa.service';
 import { SubscribeDto } from './dto/subscribe.dto';
 import { TorrentService } from '../torrent/torrent.service';
 import { NyaaItemDto } from './dto/nyaa-response-item';
+import { PubSub } from 'graphql-subscriptions';
 
 @Controller('nyaa')
 export class NyaaController {
   constructor(
     private readonly nyaaService: NyaaService,
     private readonly torrentService: TorrentService,
+    @Inject('PUB_SUB')
+    private pubSub: PubSub,
   ) {}
 
   @Get()
@@ -31,8 +35,10 @@ export class NyaaController {
 
   @Get('subscriptions')
   async getSubscriptions(): Promise<any> {
-    this.torrentService.rescanDownloads();
-    return await this.nyaaService.searchSubscribed();
+    await this.torrentService.rescanDownloads();
+    const subscriptions = await this.nyaaService.searchSubscribed();
+    this.pubSub.publish('subscriptionAdded', subscriptions);
+    return subscriptions;
   }
 
   @Post('subscribe')

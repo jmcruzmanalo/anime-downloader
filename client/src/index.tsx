@@ -12,14 +12,13 @@ import { onError } from 'apollo-link-error';
 import { ApolloLink, split } from 'apollo-link';
 import { WebSocketLink } from 'apollo-link-ws';
 import { getMainDefinition } from 'apollo-utilities';
-import { FragmentDefinitionNode, OperationDefinitionNode } from 'graphql';
 
 const httpLink = new HttpLink({
   uri: 'http://192.168.0.104:5000/graphql'
 });
 
 const wsLink = new WebSocketLink({
-  uri: `ws://192.168.0.104:5000`,
+  uri: `ws://192.168.0.104:5000/graphql`,
   options: {
     reconnect: true
   }

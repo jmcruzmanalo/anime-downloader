@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react';
 import { Tabs, Empty, List, Typography, Button, Progress } from 'antd';
 import gql from 'graphql-tag';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useQuery, useMutation, useSubscription } from '@apollo/react-hooks';
 import { SubscribedAnime } from '../../generated/SubscribedAnime';
 import { Loader } from '../Shared/Loader';
 import { GetDownloadProgress_downloadProgress } from '../../generated/GetDownloadProgress';
 import { NyaaItemInput } from '../../generated/globalTypes';
 import Scroll from 'react-perfect-scrollbar';
 import { StartDownload_startDownload } from '../../generated/StartDownload';
+import { onSubscriptionAdded } from '../../generated/onSubscriptionAdded';
 
 const { TabPane } = Tabs;
 const { Item } = List;
@@ -16,6 +17,22 @@ const { Text } = Typography;
 interface IAllDownloads {
   downloadProgress: GetDownloadProgress_downloadProgress[];
 }
+
+const SUBSCRIBE_ANIME_ADDED = gql`
+  subscription onSubscriptionAdded {
+    subscriptionAdded {
+      animeName
+      episodes {
+        name
+        fileSize
+        nbDownload
+        links {
+          magnet
+        }
+      }
+    }
+  }
+`;
 
 const SUBSCRIBED_ANIME = gql`
   query SubscribedAnime {
@@ -42,17 +59,21 @@ const START_DOWNLOAD = gql`
 `;
 
 export const AllDownloads: React.FC<IAllDownloads> = ({ downloadProgress }) => {
-  const { data, loading, refetch } = useQuery<SubscribedAnime>(
-    SUBSCRIBED_ANIME
-  );
+  const sub = useSubscription<onSubscriptionAdded>(SUBSCRIBE_ANIME_ADDED, {});
+  const { data, loading, error } = sub;
+  console.log(sub);
+
   const [startDownload, { data: startedDownload }] = useMutation<
     StartDownload_startDownload
   >(START_DOWNLOAD);
 
+  useEffect(() => {
+    fetch('http://192.168.0.104:5000/nyaa/subscriptions');
+  }, []);
+
   if (loading) return <Loader />;
 
-  if ((!data || data.subscribedEpisodes.length === 0) && !loading) {
-    if (refetch) refetch();
+  if ((!data || data.subscriptionAdded.length === 0) && !loading) {
     return (
       <Empty
         description={
@@ -64,7 +85,7 @@ export const AllDownloads: React.FC<IAllDownloads> = ({ downloadProgress }) => {
 
   let animeOutput =
     data &&
-    data.subscribedEpisodes.map(({ animeName, episodes }) => {
+    data.subscriptionAdded.map(({ animeName, episodes }) => {
       return (
         <TabPane key={animeName} tab={animeName}>
           <Scroll style={{ height: `calc(100vh - 292px)` }}>
