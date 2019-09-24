@@ -6,7 +6,7 @@ import { SocketProvider } from './helpers/SocketProvider';
 import Downloads from './components/Downloads/index';
 import { Route, Switch, HashRouter } from 'react-router-dom';
 
-const socket = openSocket('http://192.168.0.106:5001');
+const socket = openSocket('ws://192.168.0.106:5001');
 socket.on('connect', () => {
   console.log(`Successfully connected to port 5001`);
 });
@@ -27,4 +27,7 @@ const App: React.FC = () => {
   );
 };
 
+
+
 export default App;
+

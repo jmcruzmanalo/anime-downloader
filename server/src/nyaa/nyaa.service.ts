@@ -20,6 +20,7 @@ import {
 } from '../torrent/dto/download-progress.dto';
 import { SubscribedAnime } from './dto/all-subscribed-anime.dto';
 import { TorrentService } from '../torrent/torrent.service';
+import { PubSub } from 'graphql-subscriptions';
 
 @Injectable()
 export class NyaaService {
@@ -29,6 +30,8 @@ export class NyaaService {
     private readonly subscriptionRepository: Repository<SubscriptionEntity>,
     @Inject(forwardRef(() => TorrentService))
     private torrentService: TorrentService,
+    @Inject('PUB_SUB')
+    private pubSub: PubSub,
   ) {}
 
   async search(
@@ -60,6 +63,8 @@ export class NyaaService {
 
     try {
       await subscription.save();
+      const subscriptions = await this.searchSubscribed();
+      this.pubSub.publish('subscriptionAdded', subscriptions);
     } catch (err) {
       this.logger.error(err);
       if (err.errno === 19) {

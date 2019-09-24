@@ -48,6 +48,10 @@ type SubscribedAnimeType {
   episodes: [NyaaItemType!]!
 }
 
+type Subscription {
+  subscriptionAdded: [SubscribedAnimeType!]!
+}
+
 type SubscriptionType {
   animeName: String!
 }

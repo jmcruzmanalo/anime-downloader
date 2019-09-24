@@ -8,6 +8,7 @@ import { AppGateway } from './app.gateway';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { PubSub } from 'graphql-subscriptions';
 
 @Module({
   imports: [
@@ -26,16 +27,24 @@ import { join } from 'path';
       playground: true,
       debug: true,
       autoSchemaFile: 'schema.gql',
+      installSubscriptionHandlers: true,
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'client', 'build'),
-      renderPath: '/'
+      renderPath: '/',
     }),
     NyaaModule,
     TorrentModule,
   ],
   controllers: [AppController],
-  providers: [AppService, AppGateway],
-  exports: [AppGateway],
+  providers: [
+    AppService,
+    AppGateway,
+    {
+      provide: 'PUB_SUB',
+      useValue: new PubSub(),
+    },
+  ],
+  exports: [AppGateway, 'PUB_SUB'],
 })
 export class AppModule {}
