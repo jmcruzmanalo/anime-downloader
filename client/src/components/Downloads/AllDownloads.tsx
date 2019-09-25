@@ -51,9 +51,10 @@ const START_DOWNLOAD = gql`
 `;
 
 export const AllDownloads: React.FC<IAllDownloads> = ({ downloadProgress }) => {
-  const { data: subscriptionsData } = useSubscription<onSubscriptionAdded>(
-    SUBSCRIBE_ANIME_ADDED
-  );
+  const {
+    data: subscriptionsData,
+    loading: subscriptionLoading
+  } = useSubscription<onSubscriptionAdded>(SUBSCRIBE_ANIME_ADDED);
   const { loading: initialLoading } = useQuery<subscriptions>(
     QUERY_ANIME_SUBSCRIPTIONS
   );
@@ -62,9 +63,12 @@ export const AllDownloads: React.FC<IAllDownloads> = ({ downloadProgress }) => {
     StartDownload_startDownload
   >(START_DOWNLOAD);
 
-  if (initialLoading) return <Loader />;
+  if (initialLoading || subscriptionLoading) return <Loader />;
 
-  if (!subscriptionsData || subscriptionsData.subscriptions.length === 0) {
+  if (
+    (!subscriptionsData || subscriptionsData.subscriptions.length === 0) &&
+    !subscriptionLoading
+  ) {
     return (
       <Empty
         description={

@@ -37,6 +37,9 @@ export class TorrentService {
 
   async rescanDownloads() {
     try {
+      if (!fs.existsSync(this.downloadPath)) {
+        fs.mkdirSync(this.downloadPath);
+      }
       const fileNames = fs.readdirSync(this.downloadPath);
       const subscriptions = await this.nyaaService.getSubscriptions();
       subscriptions.forEach((sub: SubscriptionEntity) => {
