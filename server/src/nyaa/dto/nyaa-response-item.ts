@@ -41,7 +41,7 @@ export interface NyaaItem {
   timestamp?: string;
   seeders?: string;
   leechers?: string;
-  nbDownload: string;
+  nbDownload?: string;
 }
 
 export class NyaaItemDto {
@@ -80,8 +80,6 @@ export class NyaaItemInput implements NyaaItem {
   name: string;
   @Field()
   fileSize: string;
-  @Field()
-  nbDownload: string;
   @Field(() => NyaaLinksInput)
   links: NyaaLinks;
 }

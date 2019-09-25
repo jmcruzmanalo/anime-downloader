@@ -1,51 +1,37 @@
-import React, { useContext, useState, useCallback, useEffect } from 'react';
-import SocketContext from '../../helpers/SocketProvider';
-import { useQuery } from '@apollo/react-hooks';
+import React from 'react';
 import gql from 'graphql-tag';
 import { Tabs, Badge } from 'antd';
-import {
-  GetDownloadProgress_downloadProgress,
-  GetDownloadProgress
-} from '../../generated/GetDownloadProgress';
 import { AllDownloads } from './AllDownloads';
-
-/**
- * TODO:
- * src/generated/globalTypes.ts is being excluded for now
- * until needed.
- */
+import { useSubscription, useQuery } from '@apollo/react-hooks';
+import { onDownloadProgress } from '../../generated/onDownloadProgress';
+import { initialDownloadProgress } from '../../generated/initialDownloadProgress';
 
 const { TabPane } = Tabs;
 
-const query = gql`
-  query GetDownloadProgress {
+const SUBSCRIBE_DOWNLOAD_PROGRESS = gql`
+  subscription onDownloadProgress {
     downloadProgress {
-      fileName
       animeName
-      downloadSpeed
+      fileName
       progress
+      downloadSpeed
+    }
+  }
+`;
+
+const QUERY_DOWNLOAD_PROGRESS = gql`
+  query initialDownloadProgress {
+    getDownloadProgress {
+      fileName
     }
   }
 `;
 
 const Downloads = () => {
-  const [downloads, setDownloads] = useState<
-    GetDownloadProgress_downloadProgress[]
-  >([]);
-
-  // const { data, refetch } = useQuery<GetDownloadProgress>(query);
-
-  // useEffect(() => {
-  //   if (data) {
-  //     setDownloads(data.downloadProgress);
-  //   }
-  // }, [data]);
-
-  // useEffect(() => {
-  //   if (socket) {
-  //     socket.on('downloadUpdate', downloadUpdate);
-  //   }
-  // }, [socket, downloadUpdate]);
+  const { data: progressData } = useSubscription<onDownloadProgress>(
+    SUBSCRIBE_DOWNLOAD_PROGRESS
+  );
+  const { loading: initialLoading } = useQuery<initialDownloadProgress>(QUERY_DOWNLOAD_PROGRESS);
 
   return (
     <Tabs
@@ -64,7 +50,9 @@ const Downloads = () => {
         }
         key="1"
       >
-        <AllDownloads downloadProgress={downloads} />
+        <AllDownloads
+          downloadProgress={progressData ? progressData.downloadProgress : []}
+        />
       </TabPane>
     </Tabs>
   );

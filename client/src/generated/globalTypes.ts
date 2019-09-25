@@ -9,7 +9,6 @@
 export interface NyaaItemInput {
   name: string;
   fileSize: string;
-  nbDownload: string;
   links: NyaaLinksInput;
 }
 

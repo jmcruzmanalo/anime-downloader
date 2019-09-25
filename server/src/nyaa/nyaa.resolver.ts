@@ -20,7 +20,9 @@ export class NyaaResolver {
 
   @Query(() => [SubscribedAnimeType])
   async subscribedEpisodes(): Promise<SubscribedAnime[]> {
-    return await this.nyaaService.searchSubscribed();
+    const subscribed = await this.nyaaService.searchSubscribed();
+    this.pubSub.publish('subscriptionAdded', subscribed);
+    return subscribed;
   }
 
   @Mutation(() => NyaaItemType)
@@ -31,7 +33,7 @@ export class NyaaResolver {
   @Subscription(() => [SubscribedAnimeType], {
     resolve: value => value,
   })
-  subscriptionAdded() {
+  subscriptions() {
     /**
      * TODO: Make subscription constants (enums).
      */

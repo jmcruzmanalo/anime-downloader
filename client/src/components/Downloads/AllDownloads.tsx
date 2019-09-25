@@ -1,26 +1,26 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Tabs, Empty, List, Typography, Button, Progress } from 'antd';
 import gql from 'graphql-tag';
-import { useQuery, useMutation, useSubscription } from '@apollo/react-hooks';
-import { SubscribedAnime } from '../../generated/SubscribedAnime';
-import { Loader } from '../Shared/Loader';
-import { GetDownloadProgress_downloadProgress } from '../../generated/GetDownloadProgress';
+import { useMutation, useSubscription, useQuery } from '@apollo/react-hooks';
 import { NyaaItemInput } from '../../generated/globalTypes';
 import Scroll from 'react-perfect-scrollbar';
 import { StartDownload_startDownload } from '../../generated/StartDownload';
 import { onSubscriptionAdded } from '../../generated/onSubscriptionAdded';
+import { onDownloadProgress_downloadProgress } from '../../generated/onDownloadProgress';
+import { subscriptions } from '../../generated/subscriptions';
+import { Loader } from '../Shared/Loader';
 
 const { TabPane } = Tabs;
 const { Item } = List;
 const { Text } = Typography;
 
 interface IAllDownloads {
-  downloadProgress: GetDownloadProgress_downloadProgress[];
+  downloadProgress: onDownloadProgress_downloadProgress[];
 }
 
 const SUBSCRIBE_ANIME_ADDED = gql`
   subscription onSubscriptionAdded {
-    subscriptionAdded {
+    subscriptions {
       animeName
       episodes {
         name
@@ -34,18 +34,10 @@ const SUBSCRIBE_ANIME_ADDED = gql`
   }
 `;
 
-const SUBSCRIBED_ANIME = gql`
-  query SubscribedAnime {
+const QUERY_ANIME_SUBSCRIPTIONS = gql`
+  query subscriptions {
     subscribedEpisodes {
       animeName
-      episodes {
-        name
-        fileSize
-        nbDownload
-        links {
-          magnet
-        }
-      }
     }
   }
 `;
@@ -59,33 +51,34 @@ const START_DOWNLOAD = gql`
 `;
 
 export const AllDownloads: React.FC<IAllDownloads> = ({ downloadProgress }) => {
-  const sub = useSubscription<onSubscriptionAdded>(SUBSCRIBE_ANIME_ADDED, {});
-  const { data, loading, error } = sub;
-  console.log(sub);
+  const { data: subscriptionsData } = useSubscription<onSubscriptionAdded>(
+    SUBSCRIBE_ANIME_ADDED
+  );
+  const { loading: initialLoading } = useQuery<subscriptions>(
+    QUERY_ANIME_SUBSCRIPTIONS
+  );
 
   const [startDownload, { data: startedDownload }] = useMutation<
     StartDownload_startDownload
   >(START_DOWNLOAD);
 
-  useEffect(() => {
-    fetch('http://192.168.0.104:5000/nyaa/subscriptions');
-  }, []);
+  if (initialLoading) return <Loader />;
 
-  if (loading) return <Loader />;
-
-  if ((!data || data.subscriptionAdded.length === 0) && !loading) {
+  if (!subscriptionsData || subscriptionsData.subscriptions.length === 0) {
     return (
       <Empty
         description={
-          <span>Nani the fuck? You no subscribe to yameteh oni chan.</span>
+          <span>
+            Nani the fuck? You no subscribe to anything. That is not daijobu.
+          </span>
         }
       />
     );
   }
 
   let animeOutput =
-    data &&
-    data.subscriptionAdded.map(({ animeName, episodes }) => {
+    subscriptionsData &&
+    subscriptionsData.subscriptions.map(({ animeName, episodes }) => {
       return (
         <TabPane key={animeName} tab={animeName}>
           <Scroll style={{ height: `calc(100vh - 292px)` }}>
@@ -113,7 +106,7 @@ export const AllDownloads: React.FC<IAllDownloads> = ({ downloadProgress }) => {
                           onClick={() =>
                             // TODO: Static code for now
                             fetch(
-                              'http://localhost:5000/openDownloadsDirectory'
+                              'http://192.168.0.104:5000/openDownloadsDirectory'
                             )
                           }
                           icon="folder-open"
@@ -130,8 +123,7 @@ export const AllDownloads: React.FC<IAllDownloads> = ({ downloadProgress }) => {
                               fileSize: ep.fileSize,
                               links: {
                                 magnet: ep.links.magnet
-                              },
-                              nbDownload: ep.nbDownload
+                              }
                             };
                             startDownload({
                               variables: {

@@ -6,25 +6,25 @@
 // GraphQL subscription operation: onSubscriptionAdded
 // ====================================================
 
-export interface onSubscriptionAdded_subscriptionAdded_episodes_links {
+export interface onSubscriptionAdded_subscriptions_episodes_links {
   __typename: "NyaaLinksType";
   magnet: string;
 }
 
-export interface onSubscriptionAdded_subscriptionAdded_episodes {
+export interface onSubscriptionAdded_subscriptions_episodes {
   __typename: "NyaaItemType";
   name: string;
   fileSize: string;
   nbDownload: string;
-  links: onSubscriptionAdded_subscriptionAdded_episodes_links;
+  links: onSubscriptionAdded_subscriptions_episodes_links;
 }
 
-export interface onSubscriptionAdded_subscriptionAdded {
+export interface onSubscriptionAdded_subscriptions {
   __typename: "SubscribedAnimeType";
   animeName: string;
-  episodes: onSubscriptionAdded_subscriptionAdded_episodes[];
+  episodes: onSubscriptionAdded_subscriptions_episodes[];
 }
 
 export interface onSubscriptionAdded {
-  subscriptionAdded: onSubscriptionAdded_subscriptionAdded[];
+  subscriptions: onSubscriptionAdded_subscriptions[];
 }

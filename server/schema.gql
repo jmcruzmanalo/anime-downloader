@@ -8,7 +8,6 @@ type DownloadProgressType {
   fileName: String!
   progress: Int!
   downloadSpeed: Int!
-  status: TORRENT_STATUS!
 }
 
 type Mutation {
@@ -18,7 +17,6 @@ type Mutation {
 input NyaaItemInput {
   name: String!
   fileSize: String!
-  nbDownload: String!
   links: NyaaLinksInput!
 }
 
@@ -38,8 +36,7 @@ type NyaaLinksType {
 }
 
 type Query {
-  hello: String!
-  downloadProgress: [DownloadProgressType!]!
+  getDownloadProgress: [DownloadProgressType!]!
   subscribedEpisodes: [SubscribedAnimeType!]!
 }
 
@@ -49,15 +46,10 @@ type SubscribedAnimeType {
 }
 
 type Subscription {
-  subscriptionAdded: [SubscribedAnimeType!]!
+  downloadProgress: [DownloadProgressType!]!
+  subscriptions: [SubscribedAnimeType!]!
 }
 
 type SubscriptionType {
   animeName: String!
-}
-
-enum TORRENT_STATUS {
-  PAUSED
-  DOWNLOADING
-  DONE
 }

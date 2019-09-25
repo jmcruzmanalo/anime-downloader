@@ -17,6 +17,7 @@ import { throttle } from 'lodash';
 import { NyaaService } from '../nyaa/nyaa.service';
 import * as fs from 'fs';
 import { SubscriptionEntity } from 'src/nyaa/subscription.entity';
+import { PubSub } from 'graphql-subscriptions';
 
 @Injectable()
 export class TorrentService {
@@ -28,6 +29,8 @@ export class TorrentService {
     private readonly gateway: AppGateway,
     @Inject(forwardRef(() => NyaaService))
     private readonly nyaaService: NyaaService,
+    @Inject('PUB_SUB')
+    private readonly pubSub: PubSub,
   ) {
     this.logger.verbose('Created instasnce of TorrentService');
   }
@@ -35,7 +38,6 @@ export class TorrentService {
   async rescanDownloads() {
     try {
       const fileNames = fs.readdirSync(this.downloadPath);
-
       const subscriptions = await this.nyaaService.getSubscriptions();
       subscriptions.forEach((sub: SubscriptionEntity) => {
         fileNames.forEach(fileName => {
@@ -53,7 +55,9 @@ export class TorrentService {
       });
     } catch (err) {
       if (err.errno === -2) {
-        this.logger.error('Downloads folder does not exist. Should work fine after starting a download. Or ask that lazy ass dev to just make the folder on startup if not exist.');
+        this.logger.error(
+          'Downloads folder does not exist. Should work fine after starting a download. Or ask that lazy ass dev to just make the folder on startup if not exist.',
+        );
       }
     }
   }
@@ -87,7 +91,6 @@ export class TorrentService {
             this.logger.log(
               `Finished downloading: ${name} - ${Math.floor(progress * 100)}`,
             );
-
             this.mapDownloadProgress();
           });
         },
@@ -116,7 +119,9 @@ export class TorrentService {
 
     progress = await this.nyaaService.setSubscriptionsFromFileName(progress);
 
-    this.gateway.emitDownloadUpdate(progress);
+    // this.logger.debug(progress);
+    this.pubSub.publish('downloadProgressUpdate', progress);
+    // this.gateway.emitDownloadUpdate(progress);
     return progress;
   }
 }
