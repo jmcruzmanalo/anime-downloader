@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { Tabs, Empty, List, Typography, Button, Progress } from 'antd';
 import gql from 'graphql-tag';
 import { useMutation, useSubscription, useQuery } from '@apollo/react-hooks';
@@ -7,8 +7,12 @@ import Scroll from 'react-perfect-scrollbar';
 import { StartDownload_startDownload } from '../../generated/StartDownload';
 import { onSubscriptionAdded } from '../../generated/onSubscriptionAdded';
 import { onDownloadProgress_downloadProgress } from '../../generated/onDownloadProgress';
-import { subscriptions } from '../../generated/subscriptions';
+import {
+  subscriptions,
+  subscriptions_subscribedEpisodes
+} from '../../generated/subscriptions';
 import { Loader } from '../Shared/Loader';
+import { AppContext } from '../../App.context';
 
 const { TabPane } = Tabs;
 const { Item } = List;
@@ -17,30 +21,6 @@ const { Text } = Typography;
 interface IAllDownloads {
   downloadProgress: onDownloadProgress_downloadProgress[];
 }
-
-const SUBSCRIBE_ANIME_ADDED = gql`
-  subscription onSubscriptionAdded {
-    subscriptions {
-      animeName
-      episodes {
-        name
-        fileSize
-        nbDownload
-        links {
-          magnet
-        }
-      }
-    }
-  }
-`;
-
-const QUERY_ANIME_SUBSCRIPTIONS = gql`
-  query subscriptions {
-    subscribedEpisodes {
-      animeName
-    }
-  }
-`;
 
 const START_DOWNLOAD = gql`
   mutation StartDownload($nyaaItem: NyaaItemInput!) {
@@ -51,30 +31,17 @@ const START_DOWNLOAD = gql`
 `;
 
 export const AllDownloads: React.FC<IAllDownloads> = ({ downloadProgress }) => {
-  const {
-    data: subscriptionsData,
-    loading: subscriptionLoading
-  } = useSubscription<onSubscriptionAdded>(SUBSCRIBE_ANIME_ADDED);
-
-  const { loading: initialLoading, refetch } = useQuery<subscriptions>(
-    QUERY_ANIME_SUBSCRIPTIONS
-  );
+  const { subscriptions, subscriptionsLoading, initialLoading } = useContext(AppContext);
 
   const [startDownload, { data: startedDownload }] = useMutation<
     StartDownload_startDownload
   >(START_DOWNLOAD);
 
-  useEffect(() => {
-    if (!initialLoading && subscriptionLoading) {
-      refetch();
-    }
-  }, [subscriptionLoading]);
-
-  if (initialLoading || subscriptionLoading) return <Loader />;
+  if (initialLoading || subscriptionsLoading) return <Loader />;
 
   if (
-    (!subscriptionsData || subscriptionsData.subscriptions.length === 0) &&
-    (!initialLoading || !subscriptionLoading)
+    (!subscriptions || subscriptions.length === 0) &&
+    (!initialLoading || !subscriptionsLoading)
   ) {
     return (
       <Empty
@@ -88,8 +55,8 @@ export const AllDownloads: React.FC<IAllDownloads> = ({ downloadProgress }) => {
   }
 
   let animeOutput =
-    subscriptionsData &&
-    subscriptionsData.subscriptions.map(({ animeName, episodes }) => {
+    subscriptions &&
+    subscriptions.map(({ animeName, episodes }) => {
       return (
         <TabPane
           key={animeName}
