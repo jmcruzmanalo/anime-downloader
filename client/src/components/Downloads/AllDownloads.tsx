@@ -18,10 +18,6 @@ const { TabPane } = Tabs;
 const { Item } = List;
 const { Text } = Typography;
 
-interface IAllDownloads {
-  downloadProgress: onDownloadProgress_downloadProgress[];
-}
-
 const START_DOWNLOAD = gql`
   mutation StartDownload($nyaaItem: NyaaItemInput!) {
     startDownload(nyaaItem: $nyaaItem) {
@@ -30,9 +26,11 @@ const START_DOWNLOAD = gql`
   }
 `;
 
-export const AllDownloads: React.FC<IAllDownloads> = ({ downloadProgress }) => {
-  const { subscriptions, subscriptionsLoading, initialLoading } = useContext(AppContext);
+export const AllDownloads: React.FC = () => {
+  const { subscriptions, subscriptionsLoading, initialLoading, downloadProgress } = useContext(AppContext);
 
+
+  console.log(downloadProgress);
   const [startDownload, { data: startedDownload }] = useMutation<
     StartDownload_startDownload
   >(START_DOWNLOAD);

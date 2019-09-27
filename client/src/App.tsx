@@ -9,6 +9,8 @@ import { useSubscription, useQuery } from '@apollo/react-hooks';
 import { onSubscriptionAdded } from './generated/onSubscriptionAdded';
 import { AppContext } from './App.context';
 import { subscriptions } from './generated/subscriptions';
+import { onDownloadProgress } from './generated/onDownloadProgress';
+import { ProgressViewIOS } from 'react-native';
 
 const SUBSCRIBE_ANIME_ADDED = gql`
   subscription onSubscriptionAdded {
@@ -26,6 +28,17 @@ const SUBSCRIBE_ANIME_ADDED = gql`
   }
 `;
 
+const SUBSCRIBE_DOWNLOAD_PROGRESS = gql`
+  subscription onDownloadProgress {
+    downloadProgress {
+      animeName
+      fileName
+      progress
+      downloadSpeed
+    }
+  }
+`;
+
 const QUERY_ANIME_SUBSCRIPTIONS = gql`
   query subscriptions {
     subscribedEpisodes {
@@ -33,7 +46,6 @@ const QUERY_ANIME_SUBSCRIPTIONS = gql`
     }
   }
 `;
-
 
 const App: React.FC = () => {
   api.get('rescanDownloads');
@@ -46,13 +58,17 @@ const App: React.FC = () => {
   const { loading: initialLoading } = useQuery<subscriptions>(
     QUERY_ANIME_SUBSCRIPTIONS
   );
+  const { data: progressData } = useSubscription<onDownloadProgress>(
+    SUBSCRIBE_DOWNLOAD_PROGRESS
+  );
 
   return (
     <AppContext.Provider
       value={{
         subscriptions: subscriptionsData ? subscriptionsData.subscriptions : [],
         subscriptionsLoading,
-        initialLoading
+        initialLoading,
+        downloadProgress: progressData ? progressData.downloadProgress : []
       }}
     >
       <HashRouter>

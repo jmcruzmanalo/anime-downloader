@@ -8,17 +8,6 @@ import { initialDownloadProgress } from '../../generated/initialDownloadProgress
 
 const { TabPane } = Tabs;
 
-const SUBSCRIBE_DOWNLOAD_PROGRESS = gql`
-  subscription onDownloadProgress {
-    downloadProgress {
-      animeName
-      fileName
-      progress
-      downloadSpeed
-    }
-  }
-`;
-
 const QUERY_DOWNLOAD_PROGRESS = gql`
   query initialDownloadProgress {
     getDownloadProgress {
@@ -28,10 +17,9 @@ const QUERY_DOWNLOAD_PROGRESS = gql`
 `;
 
 const Downloads = () => {
-  const { data: progressData } = useSubscription<onDownloadProgress>(
-    SUBSCRIBE_DOWNLOAD_PROGRESS
+  const { loading: initialLoading } = useQuery<initialDownloadProgress>(
+    QUERY_DOWNLOAD_PROGRESS
   );
-  const { loading: initialLoading } = useQuery<initialDownloadProgress>(QUERY_DOWNLOAD_PROGRESS);
 
   return (
     <Tabs
@@ -50,9 +38,7 @@ const Downloads = () => {
         }
         key="1"
       >
-        <AllDownloads
-          downloadProgress={progressData ? progressData.downloadProgress : []}
-        />
+        <AllDownloads />
       </TabPane>
     </Tabs>
   );
