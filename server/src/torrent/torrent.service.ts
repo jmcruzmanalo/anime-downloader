@@ -24,6 +24,7 @@ export class TorrentService {
   private torrentClient = new WebTorrent();
   private logger = new Logger('TorrentService');
   public downloadPath = __dirname + '/../downloads';
+  private initialized: boolean = false;
 
   constructor(
     private readonly gateway: AppGateway,
@@ -36,10 +37,12 @@ export class TorrentService {
   }
 
   async rescanDownloads() {
+    if (this.initialized) {
+      this.logger.log('Already initialized. rescanDownloads() will not run');
+      return;
+    }
+    this.logger.log('Scanning downloads');
     try {
-      if (!fs.existsSync(this.downloadPath)) {
-        fs.mkdirSync(this.downloadPath);
-      }
       const fileNames = fs.readdirSync(this.downloadPath);
       const subscriptions = await this.nyaaService.getSubscriptions();
       subscriptions.forEach((sub: SubscriptionEntity) => {
@@ -62,6 +65,8 @@ export class TorrentService {
           'Downloads folder does not exist. Should work fine after starting a download. Or ask that lazy ass dev to just make the folder on startup if not exist.',
         );
       }
+    } finally {
+      this.initialized = true;
     }
   }
 
@@ -87,7 +92,7 @@ export class TorrentService {
               const { done } = torrent;
               if (done) return;
               this.mapDownloadProgress();
-            }, 2000),
+            }, 500),
           );
           torrent.on('done', () => {
             const { progress, name } = torrent;

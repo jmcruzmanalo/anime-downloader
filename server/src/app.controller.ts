@@ -24,4 +24,9 @@ export class AppController {
       }
     });
   }
+
+  @Get('rescanDownloads')
+  rescanDownloads() {
+    this.torrentService.rescanDownloads();
+  }
 }
