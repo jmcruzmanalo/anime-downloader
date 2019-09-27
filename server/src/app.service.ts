@@ -10,7 +10,6 @@ export class AppService {
   ) {}
 
   getHello(): string {
-    console.log(this.torrentService);
     return 'Hello World!';
   }
 }

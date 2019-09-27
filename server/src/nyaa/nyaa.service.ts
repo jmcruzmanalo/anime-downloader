@@ -21,6 +21,7 @@ import {
 import { SubscribedAnime } from './dto/all-subscribed-anime.dto';
 import { TorrentService } from '../torrent/torrent.service';
 import { PubSub } from 'graphql-subscriptions';
+import { SUBSCRIPTION_EVENT } from './subEvent.enum';
 
 @Injectable()
 export class NyaaService {
@@ -65,12 +66,12 @@ export class NyaaService {
       await subscription.save();
     } catch (err) {
       if (err.errno === 19) {
-        this.logger.error('Anime subscription already exists.')
+        this.logger.error('Anime subscription already exists.');
         throw new ConflictException('Anime subscription already exists.');
       }
     } finally {
       const subscriptions = await this.searchSubscribed();
-      this.pubSub.publish('subscriptionAdded', subscriptions);
+      this.pubSub.publish(SUBSCRIPTION_EVENT.SUB_ADDED, subscriptions);
     }
   }
 
@@ -79,6 +80,7 @@ export class NyaaService {
   }
 
   async searchSubscribed(): Promise<SubscribedAnime[]> {
+    this.preSearchUpdate(); // no need to await, consider it a side job
     const subscriptions: SubscriptionEntity[] = await this.getSubscriptions();
     const searchQueue: Promise<NyaaItem[]>[] = [];
     const result: SubscribedAnime[] = [];
@@ -107,6 +109,21 @@ export class NyaaService {
     }
 
     return result;
+  }
+
+  // Make pubsub output data if nyaaResponse is already in db, then update later
+  private async preSearchUpdate() {
+    const subscriptions = await this.subscriptionRepository.find();
+    const result: SubscribedAnime[] = [];
+    subscriptions.forEach(sub => {
+      if (sub.nyaaResponse) {
+        result.push({
+          animeName: sub.animeName,
+          episodes: JSON.parse(sub.nyaaResponse),
+        });
+      }
+    });
+    this.pubSub.publish(SUBSCRIPTION_EVENT.SUB_ADDED, result);
   }
 
   async setSubscriptionsFromFileName(

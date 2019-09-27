@@ -23,7 +23,7 @@ import { PubSub } from 'graphql-subscriptions';
 export class TorrentService {
   private torrentClient = new WebTorrent();
   private logger = new Logger('TorrentService');
-  public downloadPath = __dirname + '/../../downloads';
+  public downloadPath = __dirname + '/../downloads';
 
   constructor(
     private readonly gateway: AppGateway,

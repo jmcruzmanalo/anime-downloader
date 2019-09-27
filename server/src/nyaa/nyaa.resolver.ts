@@ -8,6 +8,7 @@ import { TorrentService } from '../torrent/torrent.service';
 import { NyaaItemInput, NyaaItemType } from './dto/nyaa-response-item';
 import { Inject, Logger } from '@nestjs/common';
 import { PubSub } from 'graphql-subscriptions';
+import { SUBSCRIPTION_EVENT } from './subEvent.enum';
 
 @Resolver()
 export class NyaaResolver {
@@ -21,8 +22,7 @@ export class NyaaResolver {
   @Query(() => [SubscribedAnimeType])
   async subscribedEpisodes(): Promise<SubscribedAnime[]> {
     const subscribed = await this.nyaaService.searchSubscribed();
-    this.logger.debug(subscribed);
-    this.pubSub.publish('subscriptionAdded', subscribed);
+    this.pubSub.publish(SUBSCRIPTION_EVENT.SUB_ADDED, subscribed);
     return subscribed;
   }
 
@@ -38,6 +38,6 @@ export class NyaaResolver {
     /**
      * TODO: Make subscription constants (enums).
      */
-    return this.pubSub.asyncIterator('subscriptionAdded');
+    return this.pubSub.asyncIterator(SUBSCRIPTION_EVENT.SUB_ADDED);
   }
 }

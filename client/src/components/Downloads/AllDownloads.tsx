@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Tabs, Empty, List, Typography, Button, Progress } from 'antd';
 import gql from 'graphql-tag';
 import { useMutation, useSubscription, useQuery } from '@apollo/react-hooks';
@@ -55,7 +55,8 @@ export const AllDownloads: React.FC<IAllDownloads> = ({ downloadProgress }) => {
     data: subscriptionsData,
     loading: subscriptionLoading
   } = useSubscription<onSubscriptionAdded>(SUBSCRIBE_ANIME_ADDED);
-  const { loading: initialLoading } = useQuery<subscriptions>(
+
+  const { loading: initialLoading, refetch } = useQuery<subscriptions>(
     QUERY_ANIME_SUBSCRIPTIONS
   );
 
@@ -63,11 +64,17 @@ export const AllDownloads: React.FC<IAllDownloads> = ({ downloadProgress }) => {
     StartDownload_startDownload
   >(START_DOWNLOAD);
 
+  useEffect(() => {
+    if (!initialLoading && subscriptionLoading) {
+      refetch();
+    }
+  }, [subscriptionLoading]);
+
   if (initialLoading || subscriptionLoading) return <Loader />;
 
   if (
     (!subscriptionsData || subscriptionsData.subscriptions.length === 0) &&
-    !subscriptionLoading
+    (!initialLoading || !subscriptionLoading)
   ) {
     return (
       <Empty
@@ -84,7 +91,10 @@ export const AllDownloads: React.FC<IAllDownloads> = ({ downloadProgress }) => {
     subscriptionsData &&
     subscriptionsData.subscriptions.map(({ animeName, episodes }) => {
       return (
-        <TabPane key={animeName} tab={animeName}>
+        <TabPane
+          key={animeName}
+          tab={<span style={{ fontWeight: 'normal' }}>{animeName}</span>}
+        >
           <Scroll style={{ height: `calc(100vh - 292px)` }}>
             <List
               itemLayout="vertical"
@@ -151,7 +161,7 @@ export const AllDownloads: React.FC<IAllDownloads> = ({ downloadProgress }) => {
                       )
                     ]}
                   >
-                    <Item.Meta title={ep.name} description="hello" />
+                    <Item.Meta title={ep.name} />
                   </Item>
                 );
               })}
