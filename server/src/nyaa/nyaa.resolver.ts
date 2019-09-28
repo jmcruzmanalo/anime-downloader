@@ -27,8 +27,11 @@ export class NyaaResolver {
   }
 
   @Mutation(() => NyaaItemType)
-  startDownload(@Args('nyaaItem') nyaaItem: NyaaItemInput) {
-    return this.torrentService.startDownload(nyaaItem);
+  async startDownload(@Args('nyaaItem') nyaaItem: NyaaItemInput) {
+    await new Promise(resolve => {
+      this.torrentService.startDownload(nyaaItem, resolve);
+    });
+    return nyaaItem;
   }
 
   @Subscription(() => [SubscribedAnimeType], {

@@ -70,7 +70,7 @@ export class TorrentService {
     }
   }
 
-  startDownload(nyaaItem: NyaaItem): NyaaItem {
+  startDownload(nyaaItem: NyaaItem, onAdded?: Function): NyaaItem {
     const { name, links } = nyaaItem;
     const { magnet } = links;
 
@@ -90,6 +90,7 @@ export class TorrentService {
             'download',
             throttle(() => {
               const { done } = torrent;
+              if (onAdded) onAdded();
               if (done) return;
               this.mapDownloadProgress();
             }, 500),

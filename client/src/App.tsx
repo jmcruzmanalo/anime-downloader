@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import BaseLayout from './components/BaseLayout';
 import SearchAnime from './components/SearchAnime';
 import Downloads from './components/Downloads/index';
@@ -48,7 +48,9 @@ const QUERY_ANIME_SUBSCRIPTIONS = gql`
 `;
 
 const App: React.FC = () => {
-  api.get('rescanDownloads');
+  useEffect(() => {
+    api.get('rescanDownloads');
+  }, []);
 
   const {
     data: subscriptionsData,
