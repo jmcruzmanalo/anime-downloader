@@ -5,7 +5,7 @@ export interface Subscription {
   animeName: string;
 }
 
-export class SubscribeDto implements Subscription {
+export class AnimeNameDto implements Subscription {
   @IsNotEmpty()
   animeName: string;
 }

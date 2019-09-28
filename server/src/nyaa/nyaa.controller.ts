@@ -6,9 +6,10 @@ import {
   UsePipes,
   ValidationPipe,
   Inject,
+  Delete,
 } from '@nestjs/common';
 import { NyaaService } from './nyaa.service';
-import { SubscribeDto } from './dto/subscribe.dto';
+import { AnimeNameDto } from './dto/subscribe.dto';
 import { TorrentService } from '../torrent/torrent.service';
 import { NyaaItemDto } from './dto/nyaa-response-item';
 import { PubSub } from 'graphql-subscriptions';
@@ -44,7 +45,7 @@ export class NyaaController {
 
   @Post('subscribe')
   @UsePipes(ValidationPipe)
-  async subscribeToAnime(@Body() subscrbieDto: SubscribeDto) {
+  async subscribeToAnime(@Body() subscrbieDto: AnimeNameDto) {
     await this.nyaaService.subscribe(subscrbieDto);
   }
 
@@ -52,5 +53,11 @@ export class NyaaController {
   @UsePipes(ValidationPipe)
   async startDownloadViaMagnetLink(@Body() nyaaItemDto: NyaaItemDto) {
     await this.torrentService.startDownload(nyaaItemDto);
+  }
+
+  @Delete('unsubscribe')
+  @UsePipes(ValidationPipe)
+  async deleteSubscription(@Body() animeNameDto: AnimeNameDto) {
+    await this.nyaaService.unsubscribe(animeNameDto);
   }
 }

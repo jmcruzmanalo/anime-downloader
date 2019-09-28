@@ -13,7 +13,7 @@ import { NyaaItemDto, NyaaItem } from './dto/nyaa-response-item';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SubscriptionEntity } from './subscription.entity';
 import { Repository, QueryFailedError } from 'typeorm';
-import { SubscribeDto, Subscription } from './dto/subscribe.dto';
+import { AnimeNameDto, Subscription } from './dto/subscribe.dto';
 import {
   DownloadProgressDto,
   DownloadProgress,
@@ -52,7 +52,7 @@ export class NyaaService {
     }
   }
 
-  async subscribe(subscribeDto: SubscribeDto) {
+  async subscribe(subscribeDto: AnimeNameDto) {
     const { animeName } = subscribeDto;
     const subscription = new SubscriptionEntity();
     subscription.animeName = animeName.toLowerCase();
@@ -73,6 +73,21 @@ export class NyaaService {
       const subscriptions = await this.searchSubscribed();
       this.pubSub.publish(SUBSCRIPTION_EVENT.SUB_ADDED, subscriptions);
     }
+  }
+
+  async unsubscribe(animeNameDto: AnimeNameDto) {
+    const { animeName } = animeNameDto;
+    const subscription = await this.subscriptionRepository.findOne({
+      where: {
+        animeName,
+      },
+    });
+    await subscription.remove();
+
+    this.pubSub.publish(
+      SUBSCRIPTION_EVENT.SUB_ADDED,
+      await this.getSubscriptionEpisodes(),
+    );
   }
 
   async getSubscriptions(): Promise<SubscriptionEntity[]> {

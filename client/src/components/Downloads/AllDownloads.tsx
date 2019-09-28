@@ -1,25 +1,21 @@
-import React, { useContext } from 'react';
-import { Tabs, Empty, List, PageHeader, Button } from 'antd';
+import React, { useContext, useCallback } from 'react';
+import { Tabs, Empty, List, PageHeader, Button, Icon } from 'antd';
+import styled from 'styled-components';
 import Scroll from 'react-perfect-scrollbar';
 import { onSubscriptionAdded_subscriptions_episodes } from '../../generated/onSubscriptionAdded';
 import { Loader } from '../Shared/Loader';
 import { AppContext } from '../../App.context';
 import ListItem from './ListItem';
+import api from '../../helpers/axiosInstance';
 
 const { TabPane } = Tabs;
 
 export const AllDownloads: React.FC = () => {
-  const { subscriptions, initialLoading } = useContext(
-    AppContext
-  );
+  const { subscriptions, initialLoading } = useContext(AppContext);
 
   if (initialLoading) return <Loader />;
 
-
-  if (
-    (!subscriptions || subscriptions.length === 0) &&
-    (!initialLoading)
-  ) {
+  if ((!subscriptions || subscriptions.length === 0) && !initialLoading) {
     return (
       <Empty
         description={
@@ -39,15 +35,28 @@ export const AllDownloads: React.FC = () => {
           key={animeName}
           tab={<span style={{ fontWeight: 'normal' }}>{animeName}</span>}
         >
-          <PageHeader
-            title="Title"
+          <TabHeader
+            title={animeName.toUpperCase()}
             extra={[
-              <Button key="1" type="ghost">
-                Delete
+              <Button key="refresh" type="primary">
+                <Icon type="reload" />
+              </Button>,
+              <Button
+                key="delete"
+                type="danger"
+                onClick={() => {
+                  api.delete('/nyaa/unsubscribe', {
+                    data: {
+                      animeName
+                    }
+                  });
+                }}
+              >
+                <Icon type="delete" theme="filled" />
               </Button>
             ]}
-          ></PageHeader>
-          <Scroll style={{ height: `calc(100vh - 292px)` }}>
+          ></TabHeader>
+          <Scroll style={{ height: `calc(100vh - 342px)` }}>
             <List
               itemLayout="vertical"
               style={{ height: `100%`, overflow: 'visible' }}
@@ -73,3 +82,9 @@ export const AllDownloads: React.FC = () => {
     </Tabs>
   );
 };
+
+const TabHeader = styled(PageHeader)`
+  padding: 0;
+  height: 50px;
+  border-bottom: 1px solid #eee;
+`;
