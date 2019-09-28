@@ -21,8 +21,7 @@ export class NyaaResolver {
 
   @Query(() => [SubscribedAnimeType])
   async subscribedEpisodes(): Promise<SubscribedAnime[]> {
-    const subscribed = await this.nyaaService.searchSubscribed();
-    this.pubSub.publish(SUBSCRIPTION_EVENT.SUB_ADDED, subscribed);
+    const subscribed = await this.nyaaService.getSubscriptionEpisodes();
     return subscribed;
   }
 

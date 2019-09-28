@@ -1,8 +1,5 @@
 import React, { useContext } from 'react';
-import styled from 'styled-components';
 import { List, Typography, Progress, Button } from 'antd';
-import { DownloadProgressDto } from '../../dto/torrent/download-progress.dto';
-import { GetDownloadProgress_downloadProgress } from '../../generated/GetDownloadProgress';
 import { AppContext } from '../../App.context';
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';

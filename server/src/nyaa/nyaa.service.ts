@@ -45,7 +45,7 @@ export class NyaaService {
       ${sub} ${query} ${resolution}p`);
       return searchResult;
     } catch (err) {
-      // this.logger.error(err);
+      this.logger.error(err);
       throw new InternalServerErrorException(
         'Something went wrong in NyaaService.search. See logs',
       );
@@ -77,6 +77,18 @@ export class NyaaService {
 
   async getSubscriptions(): Promise<SubscriptionEntity[]> {
     return await this.subscriptionRepository.find();
+  }
+
+  async getSubscriptionEpisodes(): Promise<SubscribedAnime[]> {
+    const subscriptions = await this.getSubscriptions();
+    if (!subscriptions) return [];
+    return subscriptions.map(sub => {
+      const s: SubscribedAnime = {
+        animeName: sub.animeName,
+        episodes: JSON.parse(sub.nyaaResponse),
+      };
+      return s;
+    });
   }
 
   async searchSubscribed(): Promise<SubscribedAnime[]> {

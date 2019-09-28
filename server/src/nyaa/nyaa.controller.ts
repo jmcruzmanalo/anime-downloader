@@ -13,6 +13,7 @@ import { TorrentService } from '../torrent/torrent.service';
 import { NyaaItemDto } from './dto/nyaa-response-item';
 import { PubSub } from 'graphql-subscriptions';
 import { SUBSCRIPTION_EVENT } from './subEvent.enum';
+import { SubscribedAnime } from './dto/all-subscribed-anime.dto';
 
 @Controller('nyaa')
 export class NyaaController {
@@ -36,7 +37,7 @@ export class NyaaController {
   @Get('subscriptions')
   async getSubscriptions(): Promise<any> {
     await this.torrentService.rescanDownloads();
-    const subscriptions = await this.nyaaService.searchSubscribed();
+    const subscriptions: SubscribedAnime[] = await this.nyaaService.getSubscriptionEpisodes();
     this.pubSub.publish(SUBSCRIPTION_EVENT.SUB_ADDED, subscriptions);
     return subscriptions;
   }

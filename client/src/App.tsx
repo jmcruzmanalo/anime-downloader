@@ -8,13 +8,28 @@ import gql from 'graphql-tag';
 import { useSubscription, useQuery } from '@apollo/react-hooks';
 import { onSubscriptionAdded } from './generated/onSubscriptionAdded';
 import { AppContext } from './App.context';
-import { subscriptions } from './generated/subscriptions';
 import { onDownloadProgress } from './generated/onDownloadProgress';
-import { ProgressViewIOS } from 'react-native';
+import { querySubscriptions } from './generated/querySubscriptions';
 
 const SUBSCRIBE_ANIME_ADDED = gql`
   subscription onSubscriptionAdded {
     subscriptions {
+      animeName
+      episodes {
+        name
+        fileSize
+        nbDownload
+        links {
+          magnet
+        }
+      }
+    }
+  }
+`;
+
+const QUERY_ANIME_SUBSCRIPTIONS = gql`
+  query querySubscriptions {
+    subscribedEpisodes {
       animeName
       episodes {
         name
@@ -39,36 +54,42 @@ const SUBSCRIBE_DOWNLOAD_PROGRESS = gql`
   }
 `;
 
-const QUERY_ANIME_SUBSCRIPTIONS = gql`
-  query subscriptions {
-    subscribedEpisodes {
-      animeName
-    }
-  }
-`;
-
 const App: React.FC = () => {
   useEffect(() => {
     api.get('rescanDownloads');
   }, []);
 
+  /**
+   * Anime subscriptions
+   */
   const {
     data: subscriptionsData,
     loading: subscriptionsLoading
   } = useSubscription<onSubscriptionAdded>(SUBSCRIBE_ANIME_ADDED);
 
-  const { loading: initialLoading } = useQuery<subscriptions>(
-    QUERY_ANIME_SUBSCRIPTIONS
-  );
+  const { loading: initialLoading, data: initialData } = useQuery<
+    querySubscriptions
+  >(QUERY_ANIME_SUBSCRIPTIONS);
+
+  /**
+   * Download progress
+   */
   const { data: progressData } = useSubscription<onDownloadProgress>(
     SUBSCRIBE_DOWNLOAD_PROGRESS
   );
 
+  const subs = subscriptionsData
+    ? subscriptionsData.subscriptions
+    : subscriptionsLoading && initialData
+    ? initialData.subscribedEpisodes
+    : [];
+
+  console.log(subs);
+
   return (
     <AppContext.Provider
       value={{
-        subscriptions: subscriptionsData ? subscriptionsData.subscriptions : [],
-        subscriptionsLoading,
+        subscriptions: subs,
         initialLoading,
         downloadProgress: progressData ? progressData.downloadProgress : []
       }}

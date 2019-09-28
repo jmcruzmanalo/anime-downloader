@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Tabs, Empty, List } from 'antd';
+import { Tabs, Empty, List, PageHeader, Button } from 'antd';
 import Scroll from 'react-perfect-scrollbar';
 import { onSubscriptionAdded_subscriptions_episodes } from '../../generated/onSubscriptionAdded';
 import { Loader } from '../Shared/Loader';
@@ -9,15 +9,16 @@ import ListItem from './ListItem';
 const { TabPane } = Tabs;
 
 export const AllDownloads: React.FC = () => {
-  const { subscriptions, subscriptionsLoading, initialLoading } = useContext(
+  const { subscriptions, initialLoading } = useContext(
     AppContext
   );
 
-  if (initialLoading || subscriptionsLoading) return <Loader />;
+  if (initialLoading) return <Loader />;
+
 
   if (
     (!subscriptions || subscriptions.length === 0) &&
-    (!initialLoading || !subscriptionsLoading)
+    (!initialLoading)
   ) {
     return (
       <Empty
@@ -38,6 +39,14 @@ export const AllDownloads: React.FC = () => {
           key={animeName}
           tab={<span style={{ fontWeight: 'normal' }}>{animeName}</span>}
         >
+          <PageHeader
+            title="Title"
+            extra={[
+              <Button key="1" type="ghost">
+                Delete
+              </Button>
+            ]}
+          ></PageHeader>
           <Scroll style={{ height: `calc(100vh - 292px)` }}>
             <List
               itemLayout="vertical"
