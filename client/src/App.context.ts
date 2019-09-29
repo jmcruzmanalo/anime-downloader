@@ -1,6 +1,5 @@
 import { createContext } from 'react';
 import {
-  onSubscriptionAdded,
   onSubscriptionAdded_subscriptions
 } from './generated/onSubscriptionAdded';
 import { onDownloadProgress_downloadProgress } from './generated/onDownloadProgress';

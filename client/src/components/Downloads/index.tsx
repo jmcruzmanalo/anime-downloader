@@ -1,9 +1,8 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import { Tabs, Badge } from 'antd';
+import { Tabs, Badge, Button } from 'antd';
 import { AllDownloads } from './AllDownloads';
-import { useSubscription, useQuery } from '@apollo/react-hooks';
-import { onDownloadProgress } from '../../generated/onDownloadProgress';
+import { useQuery } from '@apollo/react-hooks';
 import { initialDownloadProgress } from '../../generated/initialDownloadProgress';
 
 const { TabPane } = Tabs;
@@ -17,9 +16,7 @@ const QUERY_DOWNLOAD_PROGRESS = gql`
 `;
 
 const Downloads = () => {
-  const { loading: initialLoading } = useQuery<initialDownloadProgress>(
-    QUERY_DOWNLOAD_PROGRESS
-  );
+  useQuery<initialDownloadProgress>(QUERY_DOWNLOAD_PROGRESS);
 
   return (
     <Tabs
@@ -32,7 +29,9 @@ const Downloads = () => {
         tab={
           <div>
             <Badge count={0} offset={[20, 0]}>
-              <a className="head-example">All</a>
+              <Button type="link" className="head-example">
+                All
+              </Button>
             </Badge>
           </div>
         }

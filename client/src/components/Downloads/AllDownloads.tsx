@@ -1,7 +1,6 @@
-import React, { useContext, useCallback } from 'react';
+import React, { useContext } from 'react';
 import { Tabs, Empty, List, PageHeader, Button, Icon } from 'antd';
 import styled from 'styled-components';
-import Scroll from 'react-perfect-scrollbar';
 import { onSubscriptionAdded_subscriptions_episodes } from '../../generated/onSubscriptionAdded';
 import { Loader } from '../Shared/Loader';
 import { AppContext } from '../../App.context';
@@ -56,7 +55,7 @@ export const AllDownloads: React.FC = () => {
               </Button>
             ]}
           ></TabHeader>
-          <Scroll style={{ height: `calc(100vh - 342px)` }}>
+          <div style={{ height: `calc(100vh - 342px)`, overflow: 'auto' }}>
             <List
               itemLayout="vertical"
               style={{ height: `100%`, overflow: 'visible' }}
@@ -67,7 +66,7 @@ export const AllDownloads: React.FC = () => {
                 }
               )}
             </List>
-          </Scroll>
+          </div>
         </TabPane>
       );
     });

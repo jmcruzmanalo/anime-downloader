@@ -70,7 +70,7 @@ export class NyaaService {
         throw new ConflictException('Anime subscription already exists.');
       }
     } finally {
-      const subscriptions = await this.searchSubscribed();
+      const subscriptions = await this.getSubscriptionEpisodes();
       this.pubSub.publish(SUBSCRIPTION_EVENT.SUB_ADDED, subscriptions);
     }
   }

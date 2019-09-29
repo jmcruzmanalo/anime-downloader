@@ -1,5 +1,4 @@
 import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, Unique } from 'typeorm';
-import { IsOptional } from 'class-validator';
 
 @Entity()
 @Unique(['animeName'])
