@@ -29,9 +29,9 @@ const START_DOWNLOAD = gql`
 const ListItem: React.FC<IListItem> = ({ episode }) => {
   const { name, fileSize, links } = episode;
   const { downloadProgress } = useContext(AppContext);
-  const [startDownload, { loading }] = useMutation<
-    StartDownload_startDownload
-  >(START_DOWNLOAD);
+  const [startDownload, { loading }] = useMutation<StartDownload_startDownload>(
+    START_DOWNLOAD
+  );
 
   const matchingProgress =
     downloadProgress &&
@@ -40,52 +40,58 @@ const ListItem: React.FC<IListItem> = ({ episode }) => {
     <Progress percent={matchingProgress.progress} width={50} />
   ) : null;
   const isDone = matchingProgress && matchingProgress.progress === 100;
-  return (
-    <Item
-      key={name}
-      actions={[
-        isDone ? (
-          <Button
-            onClick={() =>
-              // TODO: Static code for now
-              fetch('http://192.168.0.104:5000/openDownloadsDirectory')
+
+  const actions = [];
+  if (isDone) {
+    actions.push(
+      <Button
+        onClick={() =>
+          // TODO: Static code for now
+          fetch('http://192.168.0.104:5000/openDownloadsDirectory')
+        }
+        icon="folder-open"
+        type="primary"
+        size="small"
+      >
+        Open folder
+      </Button>
+    );
+  } else {
+    actions.push(
+      <Button
+        onClick={() => {
+          const item: NyaaItemInput = {
+            name: name,
+            fileSize: fileSize,
+            links: {
+              magnet: links.magnet
             }
-            icon="folder-open"
-            type="primary"
-            size="small"
-          >
-            Open folder
-          </Button>
-        ) : (
-          <Button
-            onClick={() => {
-              const item: NyaaItemInput = {
-                name: name,
-                fileSize: fileSize,
-                links: {
-                  magnet: links.magnet
-                }
-              };
-              startDownload({
-                variables: {
-                  nyaaItem: item
-                }
-              });
-            }}
-            loading={!!matchingProgress || loading}
-            type="primary"
-            icon="download"
-            size="small"
-          >
-            {matchingProgress ? 'Downloading' : 'Download'}
-          </Button>
-        ),
-        progressWheel && <div style={{ width: 201 }}>{progressWheel}</div>,
-        matchingProgress && matchingProgress.progress !== 100 && (
-          <Text>{`${matchingProgress.downloadSpeed} kb/s`}</Text>
-        )
-      ]}
-    >
+          };
+          startDownload({
+            variables: {
+              nyaaItem: item
+            }
+          });
+        }}
+        loading={!!matchingProgress || loading}
+        type="primary"
+        icon="download"
+        size="small"
+      >
+        {matchingProgress ? 'Downloading' : 'Download'}
+      </Button>
+    );
+  }
+
+  if (progressWheel) {
+    actions.push(<div style={{ width: 201 }}>{progressWheel}</div>);
+  }
+  if (matchingProgress && matchingProgress.progress !== 100) {
+    actions.push(<Text>{`${matchingProgress.downloadSpeed} kb/s`}</Text>);
+  }
+
+  return (
+    <Item key={name} actions={actions}>
       <Item.Meta title={name} />
     </Item>
   );

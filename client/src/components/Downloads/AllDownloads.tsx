@@ -55,7 +55,7 @@ export const AllDownloads: React.FC = () => {
               </Button>
             ]}
           ></TabHeader>
-          <div style={{ height: `calc(100vh - 342px)`, overflow: 'auto' }}>
+          <div style={{ height: `calc(100vh - 351px)`, overflow: 'auto' }}>
             <List
               itemLayout="vertical"
               style={{ height: `100%`, overflow: 'visible' }}
