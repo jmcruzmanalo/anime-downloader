@@ -16,6 +16,7 @@ type DownloadProgressType {
 
 type Mutation {
   startDownload(nyaaItem: NyaaItemInput!): NyaaItemType!
+  startDownloadAll(animeNameInput: AnimeNameInput!): [NyaaItemType!]!
   refreshSubscription(animeNameInput: AnimeNameInput!): Boolean!
 }
 

@@ -50,6 +50,13 @@ export const AllDownloads: React.FC = () => {
             title={animeName.toUpperCase()}
             extra={[
               <Button
+                key="downloadAll"
+                type="primary"
+              >
+                <Icon type="download" />
+                Download All
+              </Button>,
+              <Button
                 key="refresh"
                 type="primary"
                 onClick={() => runRefreshSubscription()}

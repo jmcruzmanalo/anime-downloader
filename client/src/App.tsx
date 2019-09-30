@@ -60,6 +60,10 @@ const App: React.FC = () => {
   }, []);
 
   /**
+   * Server state
+   */
+
+  /**
    * Anime subscriptions
    */
   const {

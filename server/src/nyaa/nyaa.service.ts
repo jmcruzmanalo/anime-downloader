@@ -60,7 +60,8 @@ export class NyaaService {
      * TODO: Storing the response as json instead of properly using sqlite. Think about it someday
      * Consider changing nyaaResponse field in Entity to be the NyaaItem[] but have it save as nyaaResponseJSON
      */
-    subscription.nyaaResponse = JSON.stringify(await this.search(animeName));
+    const res = await this.search(animeName);
+    subscription.nyaaResponse = JSON.stringify(res);
 
     try {
       await subscription.save();
@@ -117,6 +118,17 @@ export class NyaaService {
 
   async getSubscriptions(): Promise<SubscriptionEntity[]> {
     return await this.subscriptionRepository.find();
+  }
+
+  async getSubscriptionByAnimeName(
+    animeName: string,
+  ): Promise<SubscriptionEntity> {
+    const subscription = await this.subscriptionRepository.findOne({
+      where: {
+        animeName,
+      },
+    });
+    return subscription;
   }
 
   async getSubscriptionEpisodes(): Promise<SubscribedAnime[]> {

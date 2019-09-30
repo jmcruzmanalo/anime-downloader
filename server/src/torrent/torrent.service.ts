@@ -18,6 +18,7 @@ import { NyaaService } from '../nyaa/nyaa.service';
 import * as fs from 'fs';
 import { SubscriptionEntity } from 'src/nyaa/subscription.entity';
 import { PubSub } from 'graphql-subscriptions';
+import { Subscription } from '../nyaa/dto/subscribe.dto';
 
 @Injectable()
 export class TorrentService {
@@ -34,6 +35,10 @@ export class TorrentService {
     private readonly pubSub: PubSub,
   ) {
     this.logger.verbose('Created instasnce of TorrentService');
+    this.torrentClient.on('error', error => {
+      this.logger.error('There was an error on the torrent client');
+      this.logger.error(error);
+    });
   }
 
   async rescanDownloads() {
@@ -86,6 +91,13 @@ export class TorrentService {
           path: this.downloadPath,
         },
         (torrent: WebTorrent.Torrent) => {
+          torrent.on('ready', () =>
+            this.logger.debug(`${torrent.name} is ready`),
+          );
+          torrent.on('warning', err => {
+            this.logger.debug(`${torrent.name} warning`);
+            this.logger.debug(err);
+          });
           torrent.on(
             'download',
             throttle(() => {
@@ -102,10 +114,31 @@ export class TorrentService {
             );
             this.mapDownloadProgress();
           });
+          torrent.on('error', err => this.logger.error(err));
+          torrent.on('noPeers', () =>
+            this.logger.error(`${torrent.name} has no peers`),
+          );
+          torrent.on('infoHash', () =>
+            this.logger.debug(`${torrent.name} infoHash`),
+          );
+          torrent.on('metadata', () =>
+            this.logger.debug(`${torrent.name} metadata`),
+          );
         },
       );
     }
     return nyaaItem;
+  }
+
+  async startDownloadAll(animeNameInput: Subscription) {
+    const { animeName } = animeNameInput;
+    const subscriptions = await this.nyaaService.getSubscriptionByAnimeName(
+      animeName,
+    );
+    const nyaaItems: NyaaItem[] = JSON.parse(subscriptions.nyaaResponse);
+    nyaaItems.forEach((nyaaItem: NyaaItem) => {
+      this.startDownload(nyaaItem);
+    });
   }
 
   async mapDownloadProgress() {
@@ -119,9 +152,9 @@ export class TorrentService {
         downloadProgress.fileName = name;
         downloadProgress.progress = Math.floor(progress * 100);
         downloadProgress.downloadSpeed = Math.floor(downloadSpeed / 1000);
-        this.logger.verbose(
-          `${name} - ${downloadProgress.progress}% - ${downloadSpeed}`,
-        );
+        // this.logger.verbose(
+        //   `${name} - ${downloadProgress.progress}% - ${downloadSpeed}`,
+        // );
         return downloadProgress;
       },
     );

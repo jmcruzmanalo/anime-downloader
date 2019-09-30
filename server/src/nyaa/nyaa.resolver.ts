@@ -26,12 +26,27 @@ export class NyaaResolver {
     return subscribed;
   }
 
+  /**
+   * TODO: This should probably be in torrent.resolver
+   */
   @Mutation(() => NyaaItemType)
   async startDownload(@Args('nyaaItem') nyaaItem: NyaaItemInput) {
     await new Promise(resolve => {
       this.torrentService.startDownload(nyaaItem, resolve);
     });
     return nyaaItem;
+  }
+
+  /**
+   * TODO: This should be in torrent.resolver
+   */
+  @Mutation(() => [NyaaItemType])
+  async startDownloadAll(
+    @Args('animeNameInput') animeNameInput: AnimeNameInput,
+  ) {
+    this.logger.log(`Starting all downloads for ${animeNameInput.animeName}`);
+    await this.torrentService.startDownloadAll(animeNameInput);
+    return '';
   }
 
   @Mutation(() => Boolean)
