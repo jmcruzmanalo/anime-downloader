@@ -75,6 +75,32 @@ export class NyaaService {
     }
   }
 
+  async refreshSubscription(animeNameDto: Subscription): Promise<Boolean> {
+    const { animeName } = animeNameDto;
+    const subscription: SubscriptionEntity = await this.subscriptionRepository.findOne(
+      {
+        where: {
+          animeName: animeName.toLowerCase(),
+        },
+      },
+    );
+    if (!subscription) {
+      throw new NotFoundException(`Anime name "${animeName}" not found`);
+    }
+    const res = await this.search(subscription.animeName);
+    subscription.nyaaResponse = JSON.stringify(res);
+    try {
+      await subscription.save();
+      return true;
+    } catch (err) {
+      this.logger.debug(err);
+      this.logger.error('Error in updateSubscription');
+    } finally {
+      const subscriptions = await this.getSubscriptionEpisodes();
+      this.pubSub.publish(SUBSCRIPTION_EVENT.SUB_ADDED, subscriptions);
+    }
+  }
+
   async unsubscribe(animeNameDto: AnimeNameDto) {
     const { animeName } = animeNameDto;
     const subscription = await this.subscriptionRepository.findOne({
@@ -83,7 +109,6 @@ export class NyaaService {
       },
     });
     await subscription.remove();
-
     this.pubSub.publish(
       SUBSCRIPTION_EVENT.SUB_ADDED,
       await this.getSubscriptionEpisodes(),

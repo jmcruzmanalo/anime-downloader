@@ -3,6 +3,10 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+input AnimeNameInput {
+  animeName: String!
+}
+
 type DownloadProgressType {
   animeName: String!
   fileName: String!
@@ -12,6 +16,7 @@ type DownloadProgressType {
 
 type Mutation {
   startDownload(nyaaItem: NyaaItemInput!): NyaaItemType!
+  refreshSubscription(animeNameInput: AnimeNameInput!): Boolean!
 }
 
 input NyaaItemInput {

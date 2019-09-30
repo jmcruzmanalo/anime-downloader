@@ -6,11 +6,23 @@ import { Loader } from '../Shared/Loader';
 import { AppContext } from '../../App.context';
 import ListItem from './ListItem';
 import api from '../../helpers/axiosInstance';
+import { useMutation } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
+import { refreshSubscription } from '../../generated/refreshSubscription';
 
 const { TabPane } = Tabs;
 
+const REFRESH_SUBSCRIPTION = gql`
+  mutation refreshSubscription {
+    refreshSubscription(animeNameInput: { animeName: "Kimetsu no yaiba" })
+  }
+`;
+
 export const AllDownloads: React.FC = () => {
   const { subscriptions, initialLoading } = useContext(AppContext);
+  const [runRefreshSubscription, { loading: isRefreshing }] = useMutation<
+    refreshSubscription
+  >(REFRESH_SUBSCRIPTION);
 
   if (initialLoading) return <Loader />;
 
@@ -37,8 +49,12 @@ export const AllDownloads: React.FC = () => {
           <TabHeader
             title={animeName.toUpperCase()}
             extra={[
-              <Button key="refresh" type="primary">
-                <Icon type="reload" />
+              <Button
+                key="refresh"
+                type="primary"
+                onClick={() => runRefreshSubscription()}
+              >
+                <Icon type={isRefreshing ? 'loading' : 'reload'} />
               </Button>,
               <Button
                 key="delete"

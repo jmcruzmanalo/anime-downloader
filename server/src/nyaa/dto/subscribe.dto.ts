@@ -1,5 +1,5 @@
 import { IsNotEmpty } from 'class-validator';
-import { ObjectType, Field } from 'type-graphql';
+import { ObjectType, Field, InputType } from 'type-graphql';
 
 export interface Subscription {
   animeName: string;
@@ -7,6 +7,12 @@ export interface Subscription {
 
 export class AnimeNameDto implements Subscription {
   @IsNotEmpty()
+  animeName: string;
+}
+
+@InputType()
+export class AnimeNameInput implements Subscription {
+  @Field()
   animeName: string;
 }
 

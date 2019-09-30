@@ -9,6 +9,7 @@ import { NyaaItemInput, NyaaItemType } from './dto/nyaa-response-item';
 import { Inject, Logger } from '@nestjs/common';
 import { PubSub } from 'graphql-subscriptions';
 import { SUBSCRIPTION_EVENT } from './subEvent.enum';
+import { AnimeNameInput } from './dto/subscribe.dto';
 
 @Resolver()
 export class NyaaResolver {
@@ -31,6 +32,13 @@ export class NyaaResolver {
       this.torrentService.startDownload(nyaaItem, resolve);
     });
     return nyaaItem;
+  }
+
+  @Mutation(() => Boolean)
+  async refreshSubscription(
+    @Args('animeNameInput') animeNameInput: AnimeNameInput,
+  ) {
+    return await this.nyaaService.refreshSubscription(animeNameInput);
   }
 
   @Subscription(() => [SubscribedAnimeType], {
