@@ -72,6 +72,7 @@ export class NyaaService {
       }
     } finally {
       const subscriptions = await this.getSubscriptionEpisodes();
+      this.logger.debug(subscriptions);
       this.pubSub.publish(SUBSCRIPTION_EVENT.SUB_ADDED, subscriptions);
     }
   }

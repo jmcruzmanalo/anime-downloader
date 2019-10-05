@@ -71,6 +71,8 @@ const App: React.FC = () => {
     loading: subscriptionsLoading
   } = useSubscription<onSubscriptionAdded>(SUBSCRIBE_ANIME_ADDED);
 
+  console.log('App', subscriptionsData, subscriptionsLoading);
+
   const { loading: initialLoading, data: initialData } = useQuery<
     querySubscriptions
   >(QUERY_ANIME_SUBSCRIPTIONS);
@@ -87,8 +89,6 @@ const App: React.FC = () => {
     : subscriptionsLoading && initialData
     ? initialData.subscribedEpisodes
     : [];
-
-  console.log(subs);
 
   return (
     <AppContext.Provider

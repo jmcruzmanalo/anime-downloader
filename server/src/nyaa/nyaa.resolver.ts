@@ -63,6 +63,7 @@ export class NyaaResolver {
     /**
      * TODO: Make subscription constants (enums).
      */
+    this.logger.debug('Someone has subscribed');
     return this.pubSub.asyncIterator(SUBSCRIPTION_EVENT.SUB_ADDED);
   }
 }
