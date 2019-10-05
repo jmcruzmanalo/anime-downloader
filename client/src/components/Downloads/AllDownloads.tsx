@@ -31,7 +31,7 @@ export const AllDownloads: React.FC = () => {
       <Empty
         description={
           <span>
-            Nani the fuck? You no subscribe to anything. That is not daijobu.
+            Nani?! You no subscribe to anything. That is not daijobu.
           </span>
         }
       />
