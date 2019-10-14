@@ -18,7 +18,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "NODE_ENV=test jest --config ./test/jest-e2e.json",
-    "package": "pkg . --targets node12-linux-x64"
+    "package:linux": "pkg . --targets node12-linux-x64",
+    "package:win": "pkg . --targets node12-windows-x64"
   },
   "bin": "./dist/main.js",
   "pkg": {
