@@ -6,10 +6,21 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "server:dev": "cd server && npm run start:dev",
+    "server:build": "cd server && npm run build",
     "client:dev": "cd client && npm start",
-    "dev": "npm run server:dev & npm run client:dev"
+    "client:build": "cd client && npm run build",
+    "dev": "npm run server:dev & npm run client:dev",
+    "copy-built-client": "cpx \"client/build/**/*\" server/dist/client",
+    "build": "npm run server:build & npm run client:build && npm run copy-built-client",
+    "build:exe": ""
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "cpx": "^1.5.0"
+  },
+  "dependencies": {
+    "os": "^0.1.1"
+  }
 }

@@ -19,21 +19,28 @@ import * as fs from 'fs';
 import { SubscriptionEntity } from 'src/nyaa/subscription.entity';
 import { PubSub } from 'graphql-subscriptions';
 import { Subscription } from '../nyaa/dto/subscribe.dto';
+import * as os from 'os';
+import { join } from 'path';
 
 @Injectable()
 export class TorrentService {
   private torrentClient = new WebTorrent();
   private logger = new Logger('TorrentService');
-  public downloadPath = __dirname + '/../downloads';
+  // public downloadPath = __dirname + '/../downloads';
+  public downloadPath = join(os.homedir(), 'Desktop');
   private initialized: boolean = false;
 
   constructor(
-    private readonly gateway: AppGateway,
     @Inject(forwardRef(() => NyaaService))
     private readonly nyaaService: NyaaService,
     @Inject('PUB_SUB')
     private readonly pubSub: PubSub,
   ) {
+    this.logger.log('Checking download path');
+    if (!fs.existsSync(this.downloadPath)) {
+      this.logger.log('Creating downloads folder');
+      fs.mkdirSync(this.downloadPath);
+    }
     this.logger.verbose('Created instasnce of TorrentService');
     this.torrentClient.on('error', error => {
       this.logger.error('There was an error on the torrent client');

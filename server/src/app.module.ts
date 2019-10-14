@@ -9,19 +9,22 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { PubSub } from 'graphql-subscriptions';
+import { SubscriptionEntity } from './nyaa/subscription.entity';
+import * as os from 'os';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database:
-        __dirname +
-        (process.env.NODE_ENV === 'test'
-          ? '/../db/test-database.db'
-          : '/../db/database.db'),
+      database: join(os.homedir(), 'Desktop', 'animeDownloader.db'),
+      // __dirname +
+      // (process.env.NODE_ENV === 'test'
+      //   ? '/db/test-database.db'
+      //   : '/db/database.db'),
       synchronize: true,
       logging: false,
-      entities: [__dirname + '/**/*.entity.{js,ts}'],
+      // entities: [__dirname + '/**/*.entity.{js,ts}'],
+      entities: [SubscriptionEntity],
     }),
     GraphQLModule.forRoot({
       playground: true,
@@ -30,7 +33,7 @@ import { PubSub } from 'graphql-subscriptions';
       installSubscriptionHandlers: true,
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', 'client', 'build'),
+      rootPath: join(__dirname, 'client'), // Prod always. Add a config for dev to change path
       renderPath: '/',
     }),
     NyaaModule,
