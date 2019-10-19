@@ -1,7 +1,9 @@
 import { app, BrowserWindow } from 'electron';
+// import * as unhandled from 'electron-unhandled';
 import { bootstrap } from './main';
 
 async function createWindow() {
+  // unhandled();
   // Create the browser window.
   let win = new BrowserWindow({
     width: 1280,
@@ -11,6 +13,8 @@ async function createWindow() {
   });
   win.setMenu(null);
   win.setMenuBarVisibility(false);
+
+  win.loadURL('https://www.youtube.com/');
 
   await bootstrap();
 
