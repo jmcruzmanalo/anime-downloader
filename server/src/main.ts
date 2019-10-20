@@ -15,4 +15,6 @@ export async function bootstrap() {
   logger.log(`MODE: ${process.env.NODE_ENV}. App running on port ${port}!`);
 }
 
-// bootstrap();
+if (process.env.NODE_ENV === 'development') {
+  bootstrap();
+}

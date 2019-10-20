@@ -12,6 +12,7 @@ import { AppGateway } from '../app.gateway';
 import {
   DownloadProgressDto,
   DownloadProgress,
+  TORRENT_STATUS,
 } from './dto/download-progress.dto';
 import { throttle } from 'lodash';
 import { NyaaService } from '../nyaa/nyaa.service';
@@ -29,6 +30,8 @@ export class TorrentService {
   // public downloadPath = __dirname + '/../downloads';
   public downloadPath = join(os.homedir(), 'Desktop');
   private initialized: boolean = false;
+
+  private downloadProgress: DownloadProgress[] = [];
 
   constructor(
     @Inject(forwardRef(() => NyaaService))
@@ -159,18 +162,22 @@ export class TorrentService {
         downloadProgress.fileName = name;
         downloadProgress.progress = Math.floor(progress * 100);
         downloadProgress.downloadSpeed = Math.floor(downloadSpeed / 1000);
-        // this.logger.verbose(
-        //   `${name} - ${downloadProgress.progress}% - ${downloadSpeed}`,
-        // );
+        if (torrent.done) {
+          downloadProgress.status = TORRENT_STATUS.DONE;
+        } else if (downloadProgress.progress === 0 && !torrent.done) {
+          downloadProgress.status = TORRENT_STATUS.SCANNING;
+        } else {
+          downloadProgress.status = TORRENT_STATUS.DOWNLOADING;
+        }
         return downloadProgress;
       },
     );
 
     progress = await this.nyaaService.setSubscriptionsFromFileName(progress);
 
-    // this.logger.debug(progress);
+    this.logger.debug(progress);
+
     this.pubSub.publish('downloadProgressUpdate', progress);
-    // this.gateway.emitDownloadUpdate(progress);
     return progress;
   }
 }

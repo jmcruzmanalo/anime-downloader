@@ -12,6 +12,7 @@ type DownloadProgressType {
   fileName: String!
   progress: Int!
   downloadSpeed: Int!
+  status: TORRENT_STATUS!
 }
 
 type Mutation {
@@ -58,4 +59,11 @@ type Subscription {
 
 type SubscriptionType {
   animeName: String!
+}
+
+enum TORRENT_STATUS {
+  SCANNING
+  PAUSED
+  DOWNLOADING
+  DONE
 }

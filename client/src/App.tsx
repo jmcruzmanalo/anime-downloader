@@ -50,6 +50,7 @@ const SUBSCRIBE_DOWNLOAD_PROGRESS = gql`
       fileName
       progress
       downloadSpeed
+      status
     }
   }
 `;

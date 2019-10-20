@@ -1,9 +1,10 @@
 import { ObjectType, Field, Int, registerEnumType } from 'type-graphql';
 
-enum TORRENT_STATUS {
-  'PAUSED',
-  'DOWNLOADING',
-  'DONE',
+export enum TORRENT_STATUS {
+  SCANNING = 'SCANNING',
+  PAUSED = 'PAUSED',
+  DOWNLOADING = 'DOWNLOADING',
+  DONE = 'DONE',
 }
 
 registerEnumType(TORRENT_STATUS, {
@@ -37,4 +38,6 @@ export class DownloadProgressType implements DownloadProgress {
   progress: number;
   @Field(() => Int)
   downloadSpeed: number;
+  @Field(() => TORRENT_STATUS)
+  status: TORRENT_STATUS;
 }

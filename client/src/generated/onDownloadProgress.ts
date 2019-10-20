@@ -2,6 +2,8 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
+import { TORRENT_STATUS } from "./globalTypes";
+
 // ====================================================
 // GraphQL subscription operation: onDownloadProgress
 // ====================================================
@@ -12,6 +14,7 @@ export interface onDownloadProgress_downloadProgress {
   fileName: string;
   progress: number;
   downloadSpeed: number;
+  status: TORRENT_STATUS;
 }
 
 export interface onDownloadProgress {

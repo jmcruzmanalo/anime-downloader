@@ -6,6 +6,13 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum TORRENT_STATUS {
+  DONE = "DONE",
+  DOWNLOADING = "DOWNLOADING",
+  PAUSED = "PAUSED",
+  SCANNING = "SCANNING",
+}
+
 export interface NyaaItemInput {
   name: string;
   fileSize: string;

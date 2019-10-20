@@ -1,7 +1,7 @@
-const { si } = require('nyaapi');
+import { si } from 'nyaapi';
 
 (async () => {
-  const res = await si.search('horriblesubs dungeon ni deai wo motomeru no wa machigatteiru darou ka ii');
+  const res = await si.search('horriblesubs shokugeki no souma: shin no sara');
   res // ?
 })();
 
