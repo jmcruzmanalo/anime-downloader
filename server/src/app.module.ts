@@ -17,14 +17,10 @@ import * as os from 'os';
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: join(os.homedir(), 'Desktop', 'animeDownloader.db'),
-      // __dirname +
-      // (process.env.NODE_ENV === 'test'
-      //   ? '/db/test-database.db'
-      //   : '/db/database.db'),
       synchronize: true,
       logging: false,
-      // entities: [__dirname + '/**/*.entity.{js,ts}'],
-      entities: [SubscriptionEntity],
+      entities: [__dirname + '/**/*.entity.{js,ts}'],
+      
     }),
     GraphQLModule.forRoot({
       playground: true,

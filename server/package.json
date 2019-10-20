@@ -1,7 +1,7 @@
 {
   "name": "anime-torrent-downloader",
   "version": "0.0.1",
-  "description": "",
+  "description": "Basically a torrent client that allows you to subscribe to an anime and easily download it.",
   "author": {
     "name": "Juan Miguel C Manalo",
     "email": "jm.cruz.manalo@gmail.com"
@@ -13,7 +13,7 @@
     "format": "prettier --write \"src/**/*.ts\"",
     "start": "ts-node -r tsconfig-paths/register src/main.ts",
     "start:dev": "NODE_ENV=development tsc-watch -p tsconfig.build.json --onSuccess \"node dist/main.js\"",
-    "start:dev:electron": "NODE_ENV=development tsc-watch -p tsconfig.build.json --onSuccess \"electron dist/index.js\"",
+    "start:dev:electron": "NODE_ENV=development tsc-watch -p tsconfig.build.json --onSuccess \"electron dist/render.js\"",
     "start:debug": "tsc-watch -p tsconfig.build.json --onSuccess \"node --inspect-brk dist/main.js\"",
     "start:prod": "node dist/main.js",
     "reset": "rimraf db/database.db && rimraf dist/downloads",
@@ -23,19 +23,13 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "NODE_ENV=test jest --config ./test/jest-e2e.json",
-    "package:linux": "pkg . --targets node12-linux-x64",
-    "package:win": "pkg . --targets node12-windows-x64",
-    "electron": "electron dist/electron.js",
-    "electron-package": "electron-packager dist/index.js --asar --all",
-    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=../release-builds",
-    "package-win": "electron-packager . --overwrite --platform=win32 --arch=ia32 --icon=assets/icons/win/icon.ico --prune=true --out=../release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Shopping List\"",
-    "package-linux": "electron-packager . --overwrite --platform=linux --arch=x64 --prune=true --out=release-builds",
+    "electron": "electron dist/main.js",
     "postinstall": "electron-builder install-app-deps",
     "pack": "electron-builder --dir",
     "dist": "electron-builder"
   },
-  "bin": "./dist/main.js",
-  "main": "./dist/main.js",
+  "bin": "./dist/render.js",
+  "main": "./dist/render.js",
   "build": {
     "appId": "jmcruzmanalo.animedownloader",
     "directories": {
@@ -101,7 +95,6 @@
     "@types/webtorrent": "^0.107.0",
     "electron": "^6.0.12",
     "electron-builder": "^21.2.0",
-    "electron-packager": "^14.0.6",
     "electron-rebuild": "^1.8.6",
     "jest": "24.7.1",
     "prettier": "1.17.0",
