@@ -2,6 +2,8 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
+import { RESOLUTION } from "./globalTypes";
+
 // ====================================================
 // GraphQL query operation: querySubscriptions
 // ====================================================
@@ -22,6 +24,7 @@ export interface querySubscriptions_subscribedEpisodes_episodes {
 export interface querySubscriptions_subscribedEpisodes {
   __typename: "SubscribedAnimeType";
   animeName: string;
+  resolution: RESOLUTION;
   episodes: querySubscriptions_subscribedEpisodes_episodes[];
 }
 

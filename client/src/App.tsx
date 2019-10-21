@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import BaseLayout from './components/BaseLayout';
 import SearchAnime from './components/SearchAnime';
 import Downloads from './components/Downloads/index';
-import { Route, Switch, HashRouter } from 'react-router-dom';
+import { Route, Switch, BrowserRouter } from 'react-router-dom';
 import { api } from './helpers/axiosInstance';
 import gql from 'graphql-tag';
 import { useSubscription, useQuery } from '@apollo/react-hooks';
@@ -10,11 +10,13 @@ import { onSubscriptionAdded } from './generated/onSubscriptionAdded';
 import { AppContext } from './App.context';
 import { onDownloadProgress } from './generated/onDownloadProgress';
 import { querySubscriptions } from './generated/querySubscriptions';
+import { QueryBasedSubs } from './components/QueryBasedSubs';
 
 const SUBSCRIBE_ANIME_ADDED = gql`
   subscription onSubscriptionAdded {
     subscriptions {
       animeName
+      resolution
       episodes {
         name
         fileSize
@@ -31,6 +33,7 @@ const QUERY_ANIME_SUBSCRIPTIONS = gql`
   query querySubscriptions {
     subscribedEpisodes {
       animeName
+      resolution
       episodes {
         name
         fileSize
@@ -72,8 +75,6 @@ const App: React.FC = () => {
     loading: subscriptionsLoading
   } = useSubscription<onSubscriptionAdded>(SUBSCRIBE_ANIME_ADDED);
 
-  console.log('App', subscriptionsData, subscriptionsLoading);
-
   const { loading: initialLoading, data: initialData } = useQuery<
     querySubscriptions
   >(QUERY_ANIME_SUBSCRIPTIONS);
@@ -99,14 +100,15 @@ const App: React.FC = () => {
         downloadProgress: progressData ? progressData.downloadProgress : []
       }}
     >
-      <HashRouter>
+      <BrowserRouter>
         <BaseLayout>
           <Switch>
             <Route path="/" exact component={Downloads} />
             <Route path="/search" component={SearchAnime} />
+            <Route path="/queryBasedSubs" component={QueryBasedSubs} />
           </Switch>
         </BaseLayout>
-      </HashRouter>
+      </BrowserRouter>
     </AppContext.Provider>
   );
 };

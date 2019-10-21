@@ -17,6 +17,7 @@ type DownloadProgressType {
 
 type Mutation {
   startDownload(nyaaItem: NyaaItemInput!): NyaaItemType!
+  subscribeToSearchQuery(searchQuery: String!, resolution: RESOLUTION!): Boolean!
   startDownloadAll(animeNameInput: AnimeNameInput!): [NyaaItemType!]!
   refreshSubscription(animeNameInput: AnimeNameInput!): Boolean!
 }
@@ -32,6 +33,7 @@ type NyaaItemType {
   fileSize: String!
   nbDownload: String!
   links: NyaaLinksType!
+  timestamp: String!
 }
 
 input NyaaLinksInput {
@@ -44,11 +46,19 @@ type NyaaLinksType {
 
 type Query {
   getDownloadProgress: [DownloadProgressType!]!
+  searchNyaa(searchQuery: String!, resolution: RESOLUTION!): [NyaaItemType!]!
   subscribedEpisodes: [SubscribedAnimeType!]!
+}
+
+enum RESOLUTION {
+  FULL_HD
+  HD
+  TRASH_QUALITY
 }
 
 type SubscribedAnimeType {
   animeName: String!
+  resolution: RESOLUTION!
   episodes: [NyaaItemType!]!
 }
 

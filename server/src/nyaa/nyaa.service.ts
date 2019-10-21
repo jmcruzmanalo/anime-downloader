@@ -22,6 +22,7 @@ import { SubscribedAnime } from './dto/all-subscribed-anime.dto';
 import { TorrentService } from '../torrent/torrent.service';
 import { PubSub } from 'graphql-subscriptions';
 import { SUBSCRIPTION_EVENT } from './subEvent.enum';
+import { RESOLUTION, SearchNyaa } from './searchNyaa.interface';
 
 @Injectable()
 export class NyaaService {
@@ -35,14 +36,11 @@ export class NyaaService {
     private pubSub: PubSub,
   ) {}
 
-  async search(
-    query: string,
-    resolution: number = 1080,
-    sub: string = 'horriblesubs',
-  ): Promise<NyaaItem[]> {
+  async search(searchNyaaArgs: SearchNyaa): Promise<NyaaItem[]> {
     try {
+      const { searchQuery, resolution } = searchNyaaArgs;
       const searchResult: NyaaItem[] = await si.search(`
-      ${sub} ${query} ${resolution}p`);
+      horriblesubs ${searchQuery} ${resolution}`);
       return searchResult;
     } catch (err) {
       this.logger.error(err);
@@ -52,15 +50,16 @@ export class NyaaService {
     }
   }
 
-  async subscribe(subscribeDto: AnimeNameDto) {
-    const { animeName } = subscribeDto;
+  async subscribe(searchNyaaArgs: SearchNyaa) {
+    const { searchQuery, resolution } = searchNyaaArgs;
     const subscription = new SubscriptionEntity();
-    subscription.animeName = animeName.toLowerCase();
+    subscription.animeName = searchQuery;
+    subscription.resolution = resolution;
     /**
      * TODO: Storing the response as json instead of properly using sqlite. Think about it someday
      * Consider changing nyaaResponse field in Entity to be the NyaaItem[] but have it save as nyaaResponseJSON
      */
-    const res = await this.search(animeName);
+    const res = await this.search(searchNyaaArgs);
     subscription.nyaaResponse = JSON.stringify(res);
 
     try {
@@ -89,7 +88,10 @@ export class NyaaService {
     if (!subscription) {
       throw new NotFoundException(`Anime name "${animeName}" not found`);
     }
-    const res = await this.search(subscription.animeName);
+    const res = await this.search({
+      searchQuery: subscription.animeName,
+      resolution: subscription.resolution,
+    });
     subscription.nyaaResponse = JSON.stringify(res);
     try {
       await subscription.save();
@@ -138,6 +140,7 @@ export class NyaaService {
     return subscriptions.map(sub => {
       const s: SubscribedAnime = {
         animeName: sub.animeName,
+        resolution: sub.resolution,
         episodes: JSON.parse(sub.nyaaResponse),
       };
       return s;
@@ -150,7 +153,10 @@ export class NyaaService {
     const searchQueue: Promise<NyaaItem[]>[] = [];
     const result: SubscribedAnime[] = [];
     subscriptions.forEach(sub => {
-      const searchItem: Promise<NyaaItem[]> = this.search(sub.animeName);
+      const searchItem: Promise<NyaaItem[]> = this.search({
+        searchQuery: sub.animeName,
+        resolution: sub.resolution,
+      });
       searchQueue.push(searchItem);
     });
     const queueResults = await Promise.all(searchQueue);
@@ -159,6 +165,7 @@ export class NyaaService {
 
       const s: SubscribedAnime = {
         animeName: subscriptions[index].animeName,
+        resolution: subscriptions[index].resolution,
         episodes: queueResult,
       };
       result.push(s);
@@ -184,6 +191,7 @@ export class NyaaService {
       if (sub.nyaaResponse) {
         result.push({
           animeName: sub.animeName,
+          resolution: sub.resolution,
           episodes: JSON.parse(sub.nyaaResponse),
         });
       }

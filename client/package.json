@@ -21,6 +21,7 @@
     "graphql-tag": "^2.10.1",
     "immer": "^4.0.0",
     "lodash": "^4.17.15",
+    "nyaapi": "^2.1.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-perfect-scrollbar": "^1.5.3",

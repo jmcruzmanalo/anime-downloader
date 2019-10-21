@@ -6,6 +6,12 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum RESOLUTION {
+  FULL_HD = "FULL_HD",
+  HD = "HD",
+  TRASH_QUALITY = "TRASH_QUALITY",
+}
+
 export enum TORRENT_STATUS {
   DONE = "DONE",
   DOWNLOADING = "DOWNLOADING",

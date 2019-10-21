@@ -2,6 +2,8 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
+import { RESOLUTION } from "./globalTypes";
+
 // ====================================================
 // GraphQL subscription operation: onSubscriptionAdded
 // ====================================================
@@ -22,6 +24,7 @@ export interface onSubscriptionAdded_subscriptions_episodes {
 export interface onSubscriptionAdded_subscriptions {
   __typename: "SubscribedAnimeType";
   animeName: string;
+  resolution: RESOLUTION;
   episodes: onSubscriptionAdded_subscriptions_episodes[];
 }
 

@@ -72,6 +72,8 @@ export class NyaaItemType implements NyaaItem {
   nbDownload: string;
   @Field(() => NyaaLinksType)
   links: NyaaLinks;
+  @Field()
+  timestamp: string;
 }
 
 @InputType()

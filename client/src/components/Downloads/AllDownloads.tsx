@@ -40,7 +40,7 @@ export const AllDownloads: React.FC = () => {
 
   let animeOutput =
     subscriptions &&
-    subscriptions.map(({ animeName, episodes }) => {
+    subscriptions.map(({ animeName, resolution, episodes }) => {
       return (
         <TabPane
           key={animeName}
@@ -48,6 +48,7 @@ export const AllDownloads: React.FC = () => {
         >
           <TabHeader
             title={animeName.toUpperCase()}
+            subTitle={resolution}
             extra={[
               <Button
                 key="downloadAll"

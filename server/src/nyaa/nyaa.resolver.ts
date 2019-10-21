@@ -5,11 +5,16 @@ import {
   SubscribedAnimeType,
 } from './dto/all-subscribed-anime.dto';
 import { TorrentService } from '../torrent/torrent.service';
-import { NyaaItemInput, NyaaItemType } from './dto/nyaa-response-item';
+import {
+  NyaaItemInput,
+  NyaaItemType,
+  NyaaItem,
+} from './dto/nyaa-response-item';
 import { Inject, Logger } from '@nestjs/common';
 import { PubSub } from 'graphql-subscriptions';
 import { SUBSCRIPTION_EVENT } from './subEvent.enum';
 import { AnimeNameInput } from './dto/subscribe.dto';
+import { SearchNyaaArgs } from './graphql-types/searchNyaaArgs';
 
 @Resolver()
 export class NyaaResolver {
@@ -19,6 +24,15 @@ export class NyaaResolver {
     private readonly torrentService: TorrentService,
     @Inject('PUB_SUB') private readonly pubSub: PubSub,
   ) {}
+
+  @Query(() => [NyaaItemType])
+  async searchNyaa(
+    @Args()
+    searchNyaaArgs: SearchNyaaArgs,
+  ): Promise<NyaaItem[]> {
+    const res: NyaaItem[] = await this.nyaaService.search(searchNyaaArgs);
+    return res;
+  }
 
   @Query(() => [SubscribedAnimeType])
   async subscribedEpisodes(): Promise<SubscribedAnime[]> {
@@ -35,6 +49,12 @@ export class NyaaResolver {
       this.torrentService.startDownload(nyaaItem, resolve);
     });
     return nyaaItem;
+  }
+
+  @Mutation(() => Boolean)
+  async subscribeToSearchQuery(@Args() searchNyaaArgs: SearchNyaaArgs) {
+    await this.nyaaService.subscribe(searchNyaaArgs);
+    return true;
   }
 
   /**

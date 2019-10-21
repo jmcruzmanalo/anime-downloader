@@ -30,23 +30,12 @@ export class NyaaController {
     return 'Ei wassap';
   }
 
-  @Get('search')
-  async search() {
-    return await this.nyaaService.search('kimetsu no yaiba');
-  }
-
   @Get('subscriptions')
   async getSubscriptions(): Promise<any> {
     await this.torrentService.rescanDownloads();
     const subscriptions: SubscribedAnime[] = await this.nyaaService.getSubscriptionEpisodes();
     this.pubSub.publish(SUBSCRIPTION_EVENT.SUB_ADDED, subscriptions);
     return subscriptions;
-  }
-
-  @Post('subscribe')
-  @UsePipes(ValidationPipe)
-  async subscribeToAnime(@Body() subscrbieDto: AnimeNameDto) {
-    await this.nyaaService.subscribe(subscrbieDto);
   }
 
   @Post('startDownload')
