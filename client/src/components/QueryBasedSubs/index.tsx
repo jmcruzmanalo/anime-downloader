@@ -52,7 +52,7 @@ export const QueryBasedSubs = () => {
     searchNyaaQuery,
     searchNyaaQueryVariables
   >(SEARCH_NYAA);
-  const [subscribe] = useMutation<
+  const [subscribe, { loading: isSubscribing }] = useMutation<
     subscribeToSearchQuery,
     subscribeToSearchQueryVariables
   >(SUBSCRIBE_TO_SEARCH_QUERY);
@@ -94,6 +94,7 @@ export const QueryBasedSubs = () => {
         </StyledCol>
         <StyledCol span={4}>
           <Button
+            loading={isSubscribing}
             type="primary"
             onClick={() => {
               subscribe({
