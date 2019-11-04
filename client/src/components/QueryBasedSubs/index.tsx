@@ -2,13 +2,25 @@ import React, { useState, useEffect, Component } from 'react';
 import styled from 'styled-components';
 import { Input, Row, Col, Select, Button } from 'antd';
 import gql from 'graphql-tag';
-import { useQuery, useLazyQuery } from '@apollo/react-hooks';
-import { searchNyaaQuery, searchNyaaQueryVariables } from '../../generated/searchNyaaQuery';
+import {
+  useQuery,
+  useLazyQuery,
+  useMutation,
+  useSubscription
+} from '@apollo/react-hooks';
+import {
+  searchNyaaQuery,
+  searchNyaaQueryVariables
+} from '../../generated/searchNyaaQuery';
 import { RESOLUTION } from '../../generated/globalTypes';
 import useDebounce from '../../helpers/hooks/use-debounce';
 import { Loader } from '../Shared/Loader';
 import api from '../../helpers/axiosInstance';
 import { SubscribeDto } from '../../dto/nyaa/subscribe.dto';
+import {
+  subscribeToSearchQuery,
+  subscribeToSearchQueryVariables
+} from '../../generated/subscribeToSearchQuery';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -26,11 +38,24 @@ const SEARCH_NYAA = gql`
   }
 `;
 
+const SUBSCRIBE_TO_SEARCH_QUERY = gql`
+  mutation subscribeToSearchQuery(
+    $searchQuery: String!
+    $resolution: RESOLUTION!
+  ) {
+    subscribeToSearchQuery(searchQuery: $searchQuery, resolution: $resolution)
+  }
+`;
+
 export const QueryBasedSubs = () => {
   const [loadQuery, { data, loading }] = useLazyQuery<
     searchNyaaQuery,
     searchNyaaQueryVariables
   >(SEARCH_NYAA);
+  const [subscribe] = useMutation<
+    subscribeToSearchQuery,
+    subscribeToSearchQueryVariables
+  >(SUBSCRIBE_TO_SEARCH_QUERY);
   const [searchQuery, setSearchQuery] = useState('');
   const [resolution, setResolution] = useState<RESOLUTION>(RESOLUTION.FULL_HD);
   const debounced = useDebounce(searchQuery, 1000);
@@ -71,10 +96,12 @@ export const QueryBasedSubs = () => {
           <Button
             type="primary"
             onClick={() => {
-              // const data: SubscribeDto = { animeName: searchQuery };
-              // api.post('/nyaa/subscribe', data).then(() => {
-              //   console.log(`Saved anime: ${searchQuery}`);
-              // });
+              subscribe({
+                variables: {
+                  searchQuery,
+                  resolution
+                }
+              });
             }}
           >
             Save search query

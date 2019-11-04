@@ -49,7 +49,7 @@ const ListItem: React.FC<IListItem> = ({ episode }) => {
       <Button
         onClick={() =>
           // TODO: Static code for now
-          fetch('http://192.168.0.104:5000/openDownloadsDirectory')
+          fetch('http://192.168.0.105:5000/openDownloadsDirectory')
         }
         icon="folder-open"
         type="primary"

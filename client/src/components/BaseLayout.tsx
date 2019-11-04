@@ -15,7 +15,7 @@ const BaseLayout: React.FC = ({ children }) => {
             <Link to={'/'}>Downloads</Link>
           </Menu.Item>
           <Menu.Item>
-            <Link to={'/search'}>Search</Link>
+            <Link to={'/queryBasedSubs'}>Search</Link>
           </Menu.Item>
         </Menu>
       </Header>
