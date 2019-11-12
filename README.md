@@ -5,6 +5,8 @@ A simple web-based anime downloader.
 
 ## Typescript | ReactJS | NestJS | Electron | GraphQL (Query, Mutations, and Subscriptions a.k.a Graphql Websockets ) | Apollo Client | TypeORM (SQLite3) | Nyaapi | webtorrent.io
 
+- The server folder contains the compiling/building scripts.
+
 # Features
 
 - Subscribe to anime and list them with a download button.
