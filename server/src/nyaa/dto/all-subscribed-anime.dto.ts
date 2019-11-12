@@ -3,6 +3,7 @@ import { ObjectType, Field } from 'type-graphql';
 import { RESOLUTION } from '../searchNyaa.interface';
 
 export interface SubscribedAnime {
+  id: number;
   animeName: string;
   resolution: RESOLUTION;
   episodes: NyaaItem[];
@@ -10,6 +11,9 @@ export interface SubscribedAnime {
 
 @ObjectType()
 export class SubscribedAnimeType implements SubscribedAnime {
+  @Field()
+  id: number;
+
   @Field()
   animeName: string;
 

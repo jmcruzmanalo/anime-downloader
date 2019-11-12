@@ -19,7 +19,7 @@ type Mutation {
   startDownload(nyaaItem: NyaaItemInput!): NyaaItemType!
   subscribeToSearchQuery(searchQuery: String!, resolution: RESOLUTION!): Boolean!
   startDownloadAll(animeNameInput: AnimeNameInput!): [NyaaItemType!]!
-  refreshSubscription(animeNameInput: AnimeNameInput!): Boolean!
+  refreshSubscription(queryId: Float!): Boolean!
 }
 
 input NyaaItemInput {
@@ -57,6 +57,7 @@ enum RESOLUTION {
 }
 
 type SubscribedAnimeType {
+  id: Float!
   animeName: String!
   resolution: RESOLUTION!
   episodes: [NyaaItemType!]!

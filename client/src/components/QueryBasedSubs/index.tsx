@@ -1,13 +1,8 @@
-import React, { useState, useEffect, Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Input, Row, Col, Select, Button } from 'antd';
 import gql from 'graphql-tag';
-import {
-  useQuery,
-  useLazyQuery,
-  useMutation,
-  useSubscription
-} from '@apollo/react-hooks';
+import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import {
   searchNyaaQuery,
   searchNyaaQueryVariables
@@ -15,8 +10,6 @@ import {
 import { RESOLUTION } from '../../generated/globalTypes';
 import useDebounce from '../../helpers/hooks/use-debounce';
 import { Loader } from '../Shared/Loader';
-import api from '../../helpers/axiosInstance';
-import { SubscribeDto } from '../../dto/nyaa/subscribe.dto';
 import {
   subscribeToSearchQuery,
   subscribeToSearchQueryVariables
@@ -115,7 +108,7 @@ export const QueryBasedSubs = () => {
         <ul>
           {data &&
             data.searchNyaa.map(ep => {
-              return <li>{ep.name}</li>;
+              return <li key={ep.name}>{ep.name}</li>;
             })}
         </ul>
       )}

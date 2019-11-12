@@ -23,6 +23,7 @@ export interface querySubscriptions_subscribedEpisodes_episodes {
 
 export interface querySubscriptions_subscribedEpisodes {
   __typename: "SubscribedAnimeType";
+  id: number;
   animeName: string;
   resolution: RESOLUTION;
   episodes: querySubscriptions_subscribedEpisodes_episodes[];

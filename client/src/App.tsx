@@ -15,6 +15,7 @@ import { QueryBasedSubs } from './components/QueryBasedSubs';
 const SUBSCRIBE_ANIME_ADDED = gql`
   subscription onSubscriptionAdded {
     subscriptions {
+      id
       animeName
       resolution
       episodes {
@@ -32,6 +33,7 @@ const SUBSCRIBE_ANIME_ADDED = gql`
 const QUERY_ANIME_SUBSCRIPTIONS = gql`
   query querySubscriptions {
     subscribedEpisodes {
+      id
       animeName
       resolution
       episodes {

@@ -23,6 +23,7 @@ import { TorrentService } from '../torrent/torrent.service';
 import { PubSub } from 'graphql-subscriptions';
 import { SUBSCRIPTION_EVENT } from './subEvent.enum';
 import { RESOLUTION, SearchNyaa } from './searchNyaa.interface';
+import { RefreshQueryArgs } from './graphql-types/refreshQueryArgs';
 
 @Injectable()
 export class NyaaService {
@@ -76,17 +77,15 @@ export class NyaaService {
     }
   }
 
-  async refreshSubscription(animeNameDto: Subscription): Promise<Boolean> {
-    const { animeName } = animeNameDto;
-    const subscription: SubscriptionEntity = await this.subscriptionRepository.findOne(
-      {
-        where: {
-          animeName: animeName.toLowerCase(),
-        },
-      },
-    );
+  async refreshSubscription(
+    refreshQueryArgs: RefreshQueryArgs,
+  ): Promise<Boolean> {
+    const { queryId } = refreshQueryArgs;
+    const subscription = await this.subscriptionRepository.findOne(queryId);
     if (!subscription) {
-      throw new NotFoundException(`Anime name "${animeName}" not found`);
+      throw new NotFoundException(
+        `Cannot find subscription with id ${queryId}. Contact JM omegaulul.`,
+      );
     }
     const res = await this.search({
       searchQuery: subscription.animeName,
@@ -139,48 +138,13 @@ export class NyaaService {
     if (!subscriptions) return [];
     return subscriptions.map(sub => {
       const s: SubscribedAnime = {
+        id: sub.id,
         animeName: sub.animeName,
         resolution: sub.resolution,
         episodes: JSON.parse(sub.nyaaResponse),
       };
       return s;
     });
-  }
-
-  async searchSubscribed(): Promise<SubscribedAnime[]> {
-    this.preSearchUpdate(); // no need to await, consider it a side job
-    const subscriptions: SubscriptionEntity[] = await this.getSubscriptions();
-    const searchQueue: Promise<NyaaItem[]>[] = [];
-    const result: SubscribedAnime[] = [];
-    subscriptions.forEach(sub => {
-      const searchItem: Promise<NyaaItem[]> = this.search({
-        searchQuery: sub.animeName,
-        resolution: sub.resolution,
-      });
-      searchQueue.push(searchItem);
-    });
-    const queueResults = await Promise.all(searchQueue);
-    queueResults.forEach((queueResult, index) => {
-      subscriptions[index].nyaaResponse = JSON.stringify(queueResult);
-
-      const s: SubscribedAnime = {
-        animeName: subscriptions[index].animeName,
-        resolution: subscriptions[index].resolution,
-        episodes: queueResult,
-      };
-      result.push(s);
-    });
-
-    try {
-      for (let x = 0; x < subscriptions.length; x++) {
-        await subscriptions[x].save();
-      }
-    } catch (err) {
-      this.logger.error(err);
-      this.logger.error('Error saving all the updated searches.');
-    }
-
-    return result;
   }
 
   // Make pubsub output data if nyaaResponse is already in db, then update later
@@ -190,6 +154,7 @@ export class NyaaService {
     subscriptions.forEach(sub => {
       if (sub.nyaaResponse) {
         result.push({
+          id: sub.id,
           animeName: sub.animeName,
           resolution: sub.resolution,
           episodes: JSON.parse(sub.nyaaResponse),

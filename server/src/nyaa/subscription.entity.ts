@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, Unique } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  BaseEntity,
+  Unique,
+} from 'typeorm';
 import { RESOLUTION } from './searchNyaa.interface';
 
 @Entity()
@@ -14,7 +20,7 @@ export class SubscriptionEntity extends BaseEntity {
   resolution: RESOLUTION;
 
   @Column({
-    nullable: true
+    nullable: true,
   })
   nyaaResponse?: string;
 }

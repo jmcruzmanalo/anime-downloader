@@ -8,20 +8,24 @@ import ListItem from './ListItem';
 import api from '../../helpers/axiosInstance';
 import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import { refreshSubscription } from '../../generated/refreshSubscription';
+import {
+  refreshSubscription,
+  refreshSubscriptionVariables
+} from '../../generated/refreshSubscription';
 
 const { TabPane } = Tabs;
 
 const REFRESH_SUBSCRIPTION = gql`
-  mutation refreshSubscription {
-    refreshSubscription(animeNameInput: { animeName: "Kimetsu no yaiba" })
+  mutation refreshSubscription($queryId: Float!) {
+    refreshSubscription(queryId: $queryId)
   }
 `;
 
 export const AllDownloads: React.FC = () => {
   const { subscriptions, initialLoading } = useContext(AppContext);
   const [runRefreshSubscription, { loading: isRefreshing }] = useMutation<
-    refreshSubscription
+    refreshSubscription,
+    refreshSubscriptionVariables
   >(REFRESH_SUBSCRIPTION);
 
   if (initialLoading) return <Loader />;
@@ -30,9 +34,7 @@ export const AllDownloads: React.FC = () => {
     return (
       <Empty
         description={
-          <span>
-            Nani?! You no subscribe to anything. That is not daijobu.
-          </span>
+          <span>Nani?! You no subscribe to anything. That is not daijobu.</span>
         }
       />
     );
@@ -40,7 +42,8 @@ export const AllDownloads: React.FC = () => {
 
   let animeOutput =
     subscriptions &&
-    subscriptions.map(({ animeName, resolution, episodes }) => {
+    subscriptions.map(sub => {
+      const { id, animeName, resolution, episodes } = sub;
       return (
         <TabPane
           key={animeName}
@@ -50,17 +53,20 @@ export const AllDownloads: React.FC = () => {
             title={animeName.toUpperCase()}
             subTitle={resolution}
             extra={[
-              <Button
-                key="downloadAll"
-                type="primary"
-              >
+              <Button key="downloadAll" type="primary">
                 <Icon type="download" />
                 Download All
               </Button>,
               <Button
                 key="refresh"
                 type="primary"
-                onClick={() => runRefreshSubscription()}
+                onClick={() =>
+                  runRefreshSubscription({
+                    variables: {
+                      queryId: id
+                    }
+                  })
+                }
               >
                 <Icon type={isRefreshing ? 'loading' : 'reload'} />
               </Button>,

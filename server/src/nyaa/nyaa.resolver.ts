@@ -15,6 +15,7 @@ import { PubSub } from 'graphql-subscriptions';
 import { SUBSCRIPTION_EVENT } from './subEvent.enum';
 import { AnimeNameInput } from './dto/subscribe.dto';
 import { SearchNyaaArgs } from './graphql-types/searchNyaaArgs';
+import { RefreshQueryArgs } from './graphql-types/refreshQueryArgs';
 
 @Resolver()
 export class NyaaResolver {
@@ -70,10 +71,8 @@ export class NyaaResolver {
   }
 
   @Mutation(() => Boolean)
-  async refreshSubscription(
-    @Args('animeNameInput') animeNameInput: AnimeNameInput,
-  ) {
-    return await this.nyaaService.refreshSubscription(animeNameInput);
+  async refreshSubscription(@Args() refreshQuery: RefreshQueryArgs) {
+    return await this.nyaaService.refreshSubscription(refreshQuery);
   }
 
   @Subscription(() => [SubscribedAnimeType], {

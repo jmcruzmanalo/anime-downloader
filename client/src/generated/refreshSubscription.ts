@@ -9,3 +9,7 @@
 export interface refreshSubscription {
   refreshSubscription: boolean;
 }
+
+export interface refreshSubscriptionVariables {
+  queryId: number;
+}

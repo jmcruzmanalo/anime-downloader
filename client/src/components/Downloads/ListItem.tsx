@@ -41,8 +41,6 @@ const ListItem: React.FC<IListItem> = ({ episode }) => {
   ) : null;
   const isDone = matchingProgress && matchingProgress.progress === 100;
 
-  console.log(downloadProgress);
-
   const actions = [];
   if (isDone) {
     actions.push(

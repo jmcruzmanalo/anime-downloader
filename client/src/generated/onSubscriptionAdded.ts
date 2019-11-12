@@ -23,6 +23,7 @@ export interface onSubscriptionAdded_subscriptions_episodes {
 
 export interface onSubscriptionAdded_subscriptions {
   __typename: "SubscribedAnimeType";
+  id: number;
   animeName: string;
   resolution: RESOLUTION;
   episodes: onSubscriptionAdded_subscriptions_episodes[];
