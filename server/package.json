@@ -76,7 +76,7 @@
     "rxjs": "^6.3.3",
     "sqlite3": "^4.1.0",
     "subscriptions-transport-ws": "^0.9.16",
-    "type-graphql": "^0.17.5",
+    "type-graphql": "^0.17.6",
     "typeorm": "^0.2.18",
     "uninstall": "0.0.0",
     "webtorrent": "^0.107.16"
