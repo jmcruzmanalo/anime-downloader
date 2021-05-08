@@ -77,7 +77,7 @@
     "sqlite3": "^4.1.0",
     "subscriptions-transport-ws": "^0.9.16",
     "type-graphql": "^0.17.5",
-    "typeorm": "^0.2.18",
+    "typeorm": "^0.2.25",
     "uninstall": "0.0.0",
     "webtorrent": "^0.107.16"
   },
