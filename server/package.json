@@ -93,7 +93,7 @@
     "@types/socket.io": "^2.1.2",
     "@types/supertest": "2.0.7",
     "@types/webtorrent": "^0.107.0",
-    "electron": "^6.0.12",
+    "electron": "^13.6.6",
     "electron-builder": "^21.2.0",
     "electron-rebuild": "^1.8.6",
     "jest": "24.7.1",
